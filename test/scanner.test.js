@@ -14,11 +14,25 @@ test("a complete synthetic environment is represented without silent loss", (t) 
   assert.equal(inventory.coverage.status, "passed");
   assert.equal(inventory.generatedAt, "2026-07-16T12:00:00.000Z");
   assert.equal(inventory.artifacts.filter((artifact) => artifact.type === "plugin").length, 3);
+  assert.equal(inventory.artifacts.filter((artifact) => artifact.type === "plugin-installation").length, 2);
+  assert.equal(inventory.artifacts.filter((artifact) => artifact.type === "app-integration").length, 3);
+  assert.equal(inventory.artifacts.filter((artifact) => artifact.type === "mcp-server").length, 3);
   assert.equal(inventory.coverage.unlabelledManifests, 2);
   assert.equal(inventory.artifacts.filter((artifact) => artifact.type === "app-tool").length, 2);
   assert.equal(inventory.artifacts.filter((artifact) => artifact.type === "connector").length, 2);
   assert.ok(inventory.artifacts.some((artifact) => artifact.source === "coding-workflow-library"));
   assert.deepEqual(findUnsafeOutput(inventory), []);
+});
+
+test("catalogue integrations and installed plugin resources are first-class artifacts", (t) => {
+  const inventory = scanEnvironment({ home: fixtureHome(t), clock: CLOCK });
+  const installations = inventory.artifacts.filter((artifact) => artifact.type === "plugin-installation");
+  assert.deepEqual(installations.map((artifact) => artifact.metadata.version).sort(), ["0.9.0", "1.0.0"]);
+  assert.ok(installations.every((artifact) => artifact.lifecycle.installed === "yes"));
+  assert.ok(installations.every((artifact) => inventory.graph.edges.some((edge) => edge.to === artifact.id && edge.type === "installed-as")));
+  const declaredSource = inventory.sources.find((source) => source.id === "codex-plugin-declared-integrations");
+  assert.equal(declaredSource.records, 2);
+  assert.equal(declaredSource.represented, 2);
 });
 
 test("unlabelled manifests remain visible with unknown verification", (t) => {

@@ -1,11 +1,10 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
-import http from "node:http";
 import path from "node:path";
 import test from "node:test";
 import { runCli, parseArgs } from "../src/cli.js";
 import { scanEnvironment } from "../src/scanner.js";
-import { startServer } from "../src/server.js";
+import { createRequestHandler } from "../src/server.js";
 import { fixtureHome } from "./helpers/fixture-home.js";
 
 test("CLI argument parsing preserves repeated host options", () => {
@@ -36,16 +35,14 @@ test("CLI scan, query, diff, and redacted export are functional", async (t) => {
   assert.doesNotMatch(exported, new RegExp(home.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
 });
 
-test("local HTTP API exposes health, inventory, coverage, and search", async (t) => {
+test("HTTP handler exposes health, inventory, coverage, and search without a socket", async (t) => {
   const home = fixtureHome(t);
   const inventory = scanEnvironment({ home, clock: () => new Date("2026-07-16T12:00:00.000Z") });
-  const server = await startServer({ inventory, port: 0 });
-  t.after(() => server.close());
-  const port = server.address().port;
-  const health = await getJson(port, "/health");
-  const coverage = await getJson(port, "/api/coverage");
-  const search = await getJson(port, "/api/search?q=product%20video");
-  const full = await getJson(port, "/api/inventory");
+  const handler = createRequestHandler({ inventory });
+  const health = invokeHandler(handler, "/health");
+  const coverage = invokeHandler(handler, "/api/coverage");
+  const search = invokeHandler(handler, "/api/search?q=product%20video");
+  const full = invokeHandler(handler, "/api/inventory");
   assert.equal(health.status, "ok");
   assert.equal(coverage.status, "passed");
   assert.ok(search.some((result) => result.artifact.name === "Alpha Video"));
@@ -68,15 +65,16 @@ function captureIo() {
   return { stdout, stderr, out: (value) => stdout.push(String(value)), err: (value) => stderr.push(String(value)) };
 }
 
-function getJson(port, pathname) {
-  return new Promise((resolve, reject) => {
-    http.get({ hostname: "127.0.0.1", port, path: pathname }, (response) => {
-      let body = "";
-      response.setEncoding("utf8");
-      response.on("data", (chunk) => { body += chunk; });
-      response.on("end", () => {
-        try { resolve(JSON.parse(body)); } catch (error) { reject(error); }
-      });
-    }).on("error", reject);
-  });
+function invokeHandler(handler, pathname) {
+  let status;
+  let body = "";
+  handler(
+    { method: "GET", url: pathname },
+    {
+      writeHead(value) { status = value; },
+      end(value) { body += value || ""; },
+    },
+  );
+  assert.equal(status, 200);
+  return JSON.parse(body);
 }

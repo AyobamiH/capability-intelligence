@@ -57,7 +57,7 @@ export function toolRisk(annotations = {}) {
 
 export function componentRisk(type) {
   if (type === "hook") return { level: "high", reasons: ["automatic lifecycle hook"] };
-  if (["mcp-server", "helper-script", "command"].includes(type)) {
+  if (["app-integration", "mcp-server", "helper-script", "command"].includes(type)) {
     return { level: "medium", reasons: ["executable local or remote integration"] };
   }
   return { level: "low", reasons: [] };

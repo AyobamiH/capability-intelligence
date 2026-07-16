@@ -43,6 +43,7 @@ export function scanPluginCatalog(config) {
   let skillRecords = 0;
   let skillRepresented = 0;
   let unlabelled = 0;
+  let integrationRecords = 0;
 
   for (const manifestPath of manifests) {
     try {
@@ -93,6 +94,41 @@ export function scanPluginCatalog(config) {
         }),
       );
 
+      for (const [field, type, label] of [
+        ["apps", "app-integration", "app integration"],
+        ["mcpServers", "mcp-server", "MCP server"],
+      ]) {
+        const entries = declarationEntries(manifest[field]);
+        integrationRecords += entries.length;
+        entries.forEach((entry, index) => {
+          const componentId = `${type}:plugin:${slug}:${index + 1}`;
+          artifacts.push(
+            createArtifact({
+              id: componentId,
+              type,
+              name: `${manifest.interface?.displayName || manifest.name} ${label}`,
+              description: `${label} declared by ${manifest.interface?.displayName || manifest.name}.`,
+              source: "codex-plugin-catalog",
+              hosts: ["codex"],
+              capabilities: inferred,
+              classificationEvidence: "structural",
+              lifecycle: {
+                discovered: "yes",
+                present: "yes",
+                installed: installedNames.has(manifest.name) ? "yes" : "no",
+                enabled: "unknown",
+                authenticated: "unknown",
+                runnable: "unknown",
+                verified: "unknown",
+              },
+              risk: componentRisk(type),
+              metadata: { provider: pluginId, declarationKind: field, declarationShape: entry.shape },
+            }),
+          );
+          edges.push({ from: pluginId, to: componentId, type: "provides" });
+        });
+      }
+
       const skillFiles = walkFiles(pluginDirectory, (file) => path.basename(file) === "SKILL.md");
       skillRecords += skillFiles.length;
       for (const skillFile of skillFiles) {
@@ -129,7 +165,7 @@ export function scanPluginCatalog(config) {
             createArtifact({
               id: componentId,
               type,
-              name: componentDisplayName(relative),
+              name: componentDisplayName(relative, type, manifest.interface?.displayName || manifest.name),
               description: `${type} supplied by ${manifest.interface?.displayName || manifest.name}`,
               source: "codex-plugin-catalog",
               hosts: ["codex"],
@@ -194,6 +230,14 @@ export function scanPluginCatalog(config) {
         deduplicated: 0,
         parseFailures: skillRecords - skillRepresented,
       },
+      {
+        id: "codex-plugin-declared-integrations",
+        status: "available",
+        records: integrationRecords,
+        represented: integrationRecords,
+        deduplicated: 0,
+        parseFailures: 0,
+      },
     ],
   };
 }
@@ -204,6 +248,7 @@ function pluginSurfaces(manifest, directory) {
     const value = manifest[name];
     if (Array.isArray(value)) result[name] = value.length;
     else if (value && typeof value === "object") result[name] = Object.keys(value).length;
+    else if (typeof value === "string" && value) result[name] = 1;
   }
   for (const name of Object.keys(COMPONENT_DIRECTORIES)) {
     const count = walkFiles(path.join(directory, name)).length;
@@ -212,12 +257,23 @@ function pluginSurfaces(manifest, directory) {
   return result;
 }
 
-function componentDisplayName(relative) {
+function declarationEntries(value) {
+  if (typeof value === "string" && value) return [{ shape: "string" }];
+  if (Array.isArray(value)) return value.map(() => ({ shape: "array-entry" }));
+  if (value && typeof value === "object") return Object.keys(value).map(() => ({ shape: "object-entry" }));
+  return [];
+}
+
+function componentDisplayName(relative, type, providerName) {
   const extensionless = relative.slice(0, relative.length - path.extname(relative).length);
   const segments = extensionless.split("/");
   const base = segments.at(-1);
   const generic = new Set(["openai", "index", "config", "plugin", "main"]);
-  const selected = generic.has(base.toLowerCase()) && segments.length > 1 ? segments.at(-2) : base;
+  const selected = generic.has(base.toLowerCase())
+    ? segments.length > 1
+      ? segments.at(-2)
+      : `${providerName} ${type}`
+    : base;
   return selected.replace(/[-_]+/g, " ");
 }
 

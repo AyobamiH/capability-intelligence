@@ -4,6 +4,7 @@ import os from "node:os";
 import path from "node:path";
 
 const targetUrl = process.env.CAPABILITY_INTELLIGENCE_URL || "http://127.0.0.1:4317";
+const screenshotDirectory = process.env.CAPABILITY_INTELLIGENCE_SCREENSHOT_DIR;
 const profile = fs.mkdtempSync(path.join(os.tmpdir(), "capability-intelligence-chrome-"));
 const chrome = spawn("google-chrome", [
   "--headless=new",
@@ -30,12 +31,17 @@ try {
       mobile: viewport.width <= 430,
     });
     await cdp.send("Page.navigate", { url: targetUrl });
-    await wait(4500);
+    await waitForDashboard(cdp, 12000);
     const evaluation = await cdp.send("Runtime.evaluate", {
       returnByValue: true,
       expression: `(() => {
         const root = document.documentElement;
-        const coverage = document.querySelector('#coverage')?.getBoundingClientRect();
+        const coverageElement = document.querySelector('#coverage');
+        const coverage = coverageElement?.getBoundingClientRect();
+        const coverageChildrenFit = [...(coverageElement?.children || [])].every((child) => {
+          const rect = child.getBoundingClientRect();
+          return rect.left >= coverage.left && rect.right <= coverage.right && rect.top >= coverage.top && rect.bottom <= coverage.bottom;
+        });
         const table = document.querySelector('.table-wrap')?.getBoundingClientRect();
         return {
           title: document.title,
@@ -43,6 +49,11 @@ try {
           documentWidth: root.scrollWidth,
           bodyWidth: document.body.scrollWidth,
           coverageRight: coverage ? Math.ceil(coverage.right) : null,
+          coverageWidth: document.querySelector('#coverage')?.clientWidth || null,
+          coverageScrollWidth: document.querySelector('#coverage')?.scrollWidth || null,
+          coverageHeight: document.querySelector('#coverage')?.clientHeight || null,
+          coverageScrollHeight: document.querySelector('#coverage')?.scrollHeight || null,
+          coverageChildrenFit,
           tableRight: table ? Math.ceil(table.right) : null,
           rowCount: document.querySelectorAll('#capability-rows tr').length,
           coverageText: document.querySelector('#coverage')?.textContent || ''
@@ -57,8 +68,20 @@ try {
     if (value.coverageRight > value.viewportWidth || value.tableRight > value.viewportWidth) {
       throw new Error(`A dashboard region exceeds the viewport at ${viewport.width}px`);
     }
+    if (value.coverageScrollWidth > value.coverageWidth || value.coverageScrollHeight > value.coverageHeight) {
+      throw new Error(`Coverage label is clipped at ${viewport.width}px`);
+    }
+    if (!value.coverageChildrenFit) throw new Error(`Coverage text exceeds its label at ${viewport.width}px`);
     if (value.rowCount === 0 || !value.coverageText.includes("unlabelled manifests retained")) {
       throw new Error(`Dashboard data did not render at ${viewport.width}px`);
+    }
+    if (screenshotDirectory) {
+      fs.mkdirSync(screenshotDirectory, { recursive: true });
+      const screenshot = await cdp.send("Page.captureScreenshot", { format: "png", captureBeyondViewport: false });
+      fs.writeFileSync(
+        path.join(screenshotDirectory, `dashboard-${viewport.width}x${viewport.height}.png`),
+        Buffer.from(screenshot.data, "base64"),
+      );
     }
   }
   cdp.close();
@@ -94,6 +117,19 @@ function connect(url) {
     }), { once: true });
     socket.addEventListener("error", () => reject(new Error("Chrome DevTools connection failed")), { once: true });
   });
+}
+
+async function waitForDashboard(cdp, timeoutMs) {
+  const deadline = Date.now() + timeoutMs;
+  while (Date.now() < deadline) {
+    const evaluation = await cdp.send("Runtime.evaluate", {
+      returnByValue: true,
+      expression: `document.querySelectorAll('#capability-rows tr').length > 0 && document.querySelector('#coverage')?.textContent.includes('unlabelled manifests retained')`,
+    });
+    if (evaluation.result.value) return;
+    await wait(250);
+  }
+  throw new Error("Dashboard did not become ready before the bounded timeout");
 }
 
 async function waitForFile(file) {

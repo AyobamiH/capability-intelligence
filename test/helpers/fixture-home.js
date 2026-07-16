@@ -12,6 +12,8 @@ export function fixtureHome(t) {
       description: "Create polished product video and motion graphics.",
       interface: { displayName: "Alpha Video", capabilities: ["video creation"] },
       skills: ["./skills/shared"],
+      apps: "./.app.json",
+      mcpServers: "./.mcp.json",
     },
     {
       name: "beta",
@@ -38,6 +40,15 @@ export function fixtureHome(t) {
   writeJson(path.join(home, ".codex/plugins/cache/fixture/alpha/.codex-remote-plugin-install.json"), {
     schema_version: 1,
     remote_plugin_id: "withheld",
+  });
+  writeJson(path.join(home, ".codex/plugins/cache/fixture/alpha/1.0.0/.codex-plugin/plugin.json"), {
+    version: "1.0.0",
+    ...plugins[0],
+  });
+  write(path.join(home, ".codex/plugins/cache/fixture/alpha/1.0.0/skills/installed/SKILL.md"), skill("installed-alpha", "Installed video helper."));
+  writeJson(path.join(home, ".codex/plugins/cache/fixture/alpha/0.9.0/.codex-plugin/plugin.json"), {
+    version: "0.9.0",
+    ...plugins[0],
   });
 
   write(path.join(home, ".codex/skills/codex-only/SKILL.md"), skill("Codex only", "Codex repository helper."));

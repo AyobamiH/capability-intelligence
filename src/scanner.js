@@ -5,10 +5,18 @@ import { scanSkillRoots } from "./adapters/skills.js";
 import { scanAppTools } from "./adapters/app-tools.js";
 import { scanConnectors } from "./adapters/connectors.js";
 import { scanWorkflowLibrary } from "./adapters/workflow-library.js";
+import { scanInstalledPlugins } from "./adapters/installed-plugins.js";
 import { buildGraph } from "./graph.js";
 import { stableSort, toIso } from "./utils.js";
 
-const ADAPTERS = [scanPluginCatalog, scanSkillRoots, scanAppTools, scanConnectors, scanWorkflowLibrary];
+const ADAPTERS = [
+  scanPluginCatalog,
+  scanInstalledPlugins,
+  scanSkillRoots,
+  scanAppTools,
+  scanConnectors,
+  scanWorkflowLibrary,
+];
 const FORBIDDEN_KEYS = /^(authorization|authorizationHeader|connectorId|serverOrigin|installUrl|apiKey|secretValue|token|rawPayload)$/i;
 const UNSAFE_VALUE_PATTERNS = [
   /\/home\/[A-Za-z0-9._-]+\//,

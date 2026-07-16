@@ -5,7 +5,7 @@
 | Source | Records | Authority |
 |---|---|---|
 | Codex plugin catalogue | Plugin manifests, marketplace policy, bundled skills and components | Read-only |
-| Installed plugin cache | Installed names and versions | Read-only |
+| Installed plugin cache | Installed versions, bundled skills, declared integrations, agents, commands, hooks, scripts, and UI components | Read-only |
 | Codex/Agents/Claude skill roots | Skill metadata and structural resources | Read-only |
 | App tool cache | Tool names, descriptions, schemas counts, and safety annotations | Read-only |
 | App directory cache | De-duplicated connector names, descriptions, availability flags, and plugin labels | Read-only |
@@ -46,14 +46,17 @@ The exact count is environment-dependent and is recalculated on every scan.
 The first complete local scan on 16 July 2026 reconciled:
 
 ```text
-6,117 capability artifacts
+6,353 capability artifacts
 180 plugin manifests
 111 unlabelled plugin manifests retained
-687 skills across catalogue and local roots
+7 installed plugin versions
+734 skills across catalogue, installed plugins, and local roots
+161 app integration declarations
+9 MCP server declarations
 250 cached app-tool definitions
 4,768 de-duplicated connector identities
 32 coding-workflow routes
-8 available source adapters
+10 available source surfaces
 0 unaccounted source records
 ```
 

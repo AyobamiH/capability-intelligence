@@ -14,7 +14,16 @@ const CONTENT_TYPES = {
 
 export async function startServer(options = {}) {
   const inventory = options.inventory || scanEnvironment({ home: options.home });
-  const server = http.createServer((request, response) => {
+  const server = http.createServer(createRequestHandler({ inventory }));
+  await new Promise((resolve, reject) => {
+    server.once("error", reject);
+    server.listen(options.port ?? 4317, "127.0.0.1", resolve);
+  });
+  return server;
+}
+
+export function createRequestHandler({ inventory }) {
+  return (request, response) => {
     const url = new URL(request.url, "http://127.0.0.1");
     if (request.method !== "GET") return sendJson(response, 405, { error: "method_not_allowed" });
     if (url.pathname === "/health") return sendJson(response, 200, { status: "ok", coverage: inventory.coverage.status });
@@ -24,12 +33,7 @@ export async function startServer(options = {}) {
       return sendJson(response, 200, searchArtifacts(inventory, url.searchParams.get("q") || ""));
     }
     return serveStatic(url.pathname, response);
-  });
-  await new Promise((resolve, reject) => {
-    server.once("error", reject);
-    server.listen(options.port ?? 4317, "127.0.0.1", resolve);
-  });
-  return server;
+  };
 }
 
 function serveStatic(urlPath, response) {

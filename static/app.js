@@ -43,7 +43,15 @@ function setupFilters() {
 
 function renderSummary() {
   const status = inventory.coverage.status;
-  elements.coverage.textContent = `${status === "passed" ? "Complete" : "Review required"} coverage · ${inventory.coverage.unlabelledManifests} unlabelled manifests retained`;
+  const statusText = `${status === "passed" ? "Complete" : "Review required"} coverage`;
+  const detailText = `${inventory.coverage.unlabelledManifests} unlabelled manifests retained`;
+  const statusLine = document.createElement("span");
+  const detailLine = document.createElement("span");
+  statusLine.textContent = statusText;
+  detailLine.textContent = detailText;
+  detailLine.className = "coverage-detail";
+  elements.coverage.replaceChildren(statusLine, detailLine);
+  elements.coverage.setAttribute("aria-label", `${statusText}; ${detailText}`);
   elements.coverage.className = `coverage ${status}`;
   const metrics = [
     ["Artifacts", inventory.summary.artifacts],
