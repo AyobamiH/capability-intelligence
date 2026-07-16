@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Inspect the capability readiness, evidence, compatibility, and risk of local agent tools." />
+    <title>Capability Intelligence</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">Local capability map</p>
+        <h1>Capability Intelligence</h1>
+      </div>
+      <div class="coverage" id="coverage" aria-live="polite">Scanning inventory</div>
+    </header>
+
+    <main>
+      <section class="toolbar" aria-label="Capability filters">
+        <label class="search">
+          <span>Find an outcome or capability</span>
+          <input id="search" type="search" placeholder="e.g. create a product video" autocomplete="off" />
+        </label>
+        <label>
+          <span>Type</span>
+          <select id="type-filter"><option value="">All types</option></select>
+        </label>
+        <label>
+          <span>Risk</span>
+          <select id="risk-filter">
+            <option value="">All risk levels</option>
+            <option value="critical">Critical</option>
+            <option value="high">High</option>
+            <option value="medium">Medium</option>
+            <option value="low">Low</option>
+            <option value="unknown">Unknown</option>
+          </select>
+        </label>
+      </section>
+
+      <section class="metrics" id="metrics" aria-label="Inventory summary"></section>
+
+      <div class="workspace">
+        <section class="inventory" aria-labelledby="inventory-title">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Environment inventory</p>
+              <h2 id="inventory-title">Capabilities</h2>
+            </div>
+            <p id="result-count">Loading</p>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>Name</th><th>Type</th><th>Readiness</th><th>Risk</th><th>Source</th></tr>
+              </thead>
+              <tbody id="capability-rows"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <aside class="details" aria-labelledby="details-title">
+          <p class="eyebrow">Evidence detail</p>
+          <h2 id="details-title">Select a capability</h2>
+          <div id="details-body">
+            <p>Choose a row to inspect lifecycle truth, capability evidence, risk, and structural metadata.</p>
+          </div>
+        </aside>
+      </div>
+
+      <section class="sources" aria-labelledby="sources-title">
+        <div class="section-heading">
+          <div><p class="eyebrow">Coverage ledger</p><h2 id="sources-title">Sources</h2></div>
+        </div>
+        <div id="source-rows" class="source-grid"></div>
+      </section>
+    </main>
+
+    <script type="module" src="/app.js"></script>
+  </body>
+</html>

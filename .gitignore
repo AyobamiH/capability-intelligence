@@ -1,0 +1,9 @@
+node_modules/
+coverage/
+dist/
+.cache/
+.capability-intelligence/
+*.log
+*.tgz
+/inventory*.json
+screenshots/

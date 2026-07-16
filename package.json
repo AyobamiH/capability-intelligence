@@ -1,0 +1,36 @@
+{
+  "name": "capability-intelligence",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Local-first capability intelligence for AI agent skills, plugins, tools, connectors, hooks, and workflow resources.",
+  "type": "module",
+  "bin": {
+    "capability-intelligence": "bin/capability-intelligence.js",
+    "capability": "bin/capability-intelligence.js"
+  },
+  "scripts": {
+    "check": "npm run lint && npm test && npm run scan:strict",
+    "lint": "node scripts/check-js.js",
+    "test": "node --test test/*.test.js",
+    "scan": "node bin/capability-intelligence.js scan",
+    "scan:json": "node bin/capability-intelligence.js scan --json",
+    "scan:strict": "node bin/capability-intelligence.js scan --strict --summary",
+    "serve": "node bin/capability-intelligence.js serve",
+    "coverage": "node bin/capability-intelligence.js coverage",
+    "audit:browser": "node test/browser-audit.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "files": [
+    "AGENTS.md",
+    "README.md",
+    "bin/",
+    "docs/",
+    "package-lock.json",
+    "schemas/",
+    "scripts/",
+    "src/",
+    "static/"
+  ]
+}
