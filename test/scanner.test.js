@@ -89,6 +89,13 @@ test("outcome search is deterministic and readiness-aware", (t) => {
   const second = searchArtifacts(inventory, "create a product video");
   assert.deepEqual(first, second);
   assert.ok(first.some((result) => result.artifact.name === "Alpha Video"));
+  assert.ok(first.every((result) => result.matched.length > 0));
+});
+
+test("outcome search does not manufacture relevance from readiness", (t) => {
+  const inventory = scanEnvironment({ home: fixtureHome(t), clock: CLOCK });
+  assert.deepEqual(searchArtifacts(inventory, ""), []);
+  assert.deepEqual(searchArtifacts(inventory, "qxvplm"), []);
 });
 
 test("inspection includes graph relationships", (t) => {

@@ -26,6 +26,7 @@ It consumes metadata from those systems and explains what a specific environment
 8. Cached tool definitions are not proof that a connector is currently reachable.
 9. Missing metadata remains unknown and visible.
 10. No default command invokes an external capability.
+11. Outcome search requires a positive lexical or concept match; readiness may rank relevant results but never creates relevance.
 
 ## Artifact Types
 

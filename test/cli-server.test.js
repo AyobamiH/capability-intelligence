@@ -23,6 +23,10 @@ test("CLI scan, query, diff, and redacted export are functional", async (t) => {
   assert.equal(await runCli(["ask", "product video", "--home", home], queryIo), 0);
   assert.match(queryIo.stdout.join("\n"), /Alpha Video/);
 
+  const noMatchIo = captureIo();
+  assert.equal(await runCli(["ask", "qxvplm", "--home", home], noMatchIo), 2);
+  assert.match(noMatchIo.stdout.join("\n"), /No capability matches found/);
+
   const diffIo = captureIo();
   assert.equal(await runCli(["diff", "--host", "codex", "--host", "claude", "--home", home], diffIo), 0);
   assert.match(diffIo.stdout.join("\n"), /Codex only/);
@@ -42,10 +46,14 @@ test("HTTP handler exposes health, inventory, coverage, and search without a soc
   const health = invokeHandler(handler, "/health");
   const coverage = invokeHandler(handler, "/api/coverage");
   const search = invokeHandler(handler, "/api/search?q=product%20video");
+  const noMatch = invokeHandler(handler, "/api/search?q=qxvplm");
+  const emptySearch = invokeHandler(handler, "/api/search");
   const full = invokeHandler(handler, "/api/inventory");
   assert.equal(health.status, "ok");
   assert.equal(coverage.status, "passed");
   assert.ok(search.some((result) => result.artifact.name === "Alpha Video"));
+  assert.deepEqual(noMatch, []);
+  assert.deepEqual(emptySearch, []);
   assert.equal(full.artifacts.length, inventory.artifacts.length);
 });
 

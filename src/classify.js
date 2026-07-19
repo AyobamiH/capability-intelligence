@@ -37,10 +37,16 @@ export function matchOutcome(artifact, query) {
     .join(" ")
     .toLowerCase();
   const matched = tokens.filter((token) => fields.includes(token));
-  let score = matched.length;
   const normalisedName = slugify(artifact.name).replaceAll("-", " ");
   const originalTokens = slugify(query).split("-").filter((token) => token.length > 2);
-  score += originalTokens.filter((token) => normalisedName.includes(token)).length * 2;
+  const nameMatches = originalTokens.filter((token) => normalisedName.includes(token));
+
+  // Readiness can rank relevant capabilities, but it cannot create relevance.
+  // Keeping this gate before lifecycle scoring preserves a truthful no-match
+  // result for empty, malformed, and genuinely unrelated outcome queries.
+  if (!matched.length && !nameMatches.length) return { score: 0, matched: [] };
+
+  let score = matched.length + nameMatches.length * 2;
   if (artifact.lifecycle.runnable === "yes") score += 3;
   else if (artifact.lifecycle.installed === "yes") score += 2;
   else if (artifact.lifecycle.present === "yes") score += 1;
