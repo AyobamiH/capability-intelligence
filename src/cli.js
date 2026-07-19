@@ -1,5 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
+import { parseCliArgs, validateCliOptions } from "./cli-options.js";
 import { scanEnvironment, redactedInventory } from "./scanner.js";
 import { hostDiff, inspectArtifact, searchArtifacts } from "./query.js";
 import { renderInventory, renderSearch, renderSummary } from "./render.js";
@@ -13,7 +14,7 @@ Usage:
   capability-intelligence ask <outcome> [--json] [--home PATH]
   capability-intelligence inspect <artifact-id> [--json] [--home PATH]
   capability-intelligence doctor [--json] [--home PATH]
-  capability-intelligence risks [--level LEVEL] [--json] [--home PATH]
+  capability-intelligence risks [--level critical|high|medium|low|unknown] [--json] [--home PATH]
   capability-intelligence duplicates [--json] [--home PATH]
   capability-intelligence diff --host HOST --host HOST [--json] [--home PATH]
   capability-intelligence export --output PATH [--redacted] [--home PATH]
@@ -27,6 +28,8 @@ export async function runCli(argv, io = defaultIo()) {
     io.out(HELP);
     return 0;
   }
+  const validationError = validateCliOptions(command, options);
+  if (validationError) return fail(io, validationError);
   const home = options.home ? path.resolve(options.home) : undefined;
 
   if (command === "serve") {
@@ -98,27 +101,7 @@ export async function runCli(argv, io = defaultIo()) {
 }
 
 export function parseArgs(argv) {
-  const [command, ...rest] = argv;
-  const positional = [];
-  const options = {};
-  for (let index = 0; index < rest.length; index += 1) {
-    const token = rest[index];
-    if (!token.startsWith("--")) {
-      positional.push(token);
-      continue;
-    }
-    const key = token.slice(2);
-    if (["json", "summary", "strict", "redacted", "help"].includes(key)) {
-      options[key] = true;
-      continue;
-    }
-    const value = rest[index + 1];
-    if (!value || value.startsWith("--")) throw new Error(`Missing value for --${key}`);
-    index += 1;
-    if (options[key] === undefined) options[key] = value;
-    else options[key] = arrayOption(options[key]).concat(value);
-  }
-  return { command, positional, options };
+  return parseCliArgs(argv);
 }
 
 function emit(io, value, json) {

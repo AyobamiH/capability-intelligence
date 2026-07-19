@@ -11,6 +11,7 @@ export const LIFECYCLE_STATES = [
 ];
 
 export const EVIDENCE_LEVELS = ["declared", "structural", "inferred", "observed", "unknown"];
+export const RISK_LEVELS = ["critical", "high", "medium", "low", "unknown"];
 
 export function lifecycle(overrides = {}) {
   return Object.fromEntries(LIFECYCLE_STATES.map((state) => [state, overrides[state] || "unknown"]));
@@ -33,7 +34,7 @@ export function createArtifact(input) {
 }
 
 export function normaliseRisk(input = {}) {
-  const level = ["low", "medium", "high", "critical", "unknown"].includes(input.level)
+  const level = RISK_LEVELS.includes(input.level)
     ? input.level
     : "unknown";
   return {

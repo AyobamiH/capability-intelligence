@@ -13,6 +13,24 @@ test("CLI argument parsing preserves repeated host options", () => {
   assert.equal(parsed.options.json, true);
 });
 
+test("CLI rejects unsupported and repeated singleton options", () => {
+  assert.throws(() => parseArgs(["scan", "--bogus", "value"]), /Unknown option for scan: --bogus/);
+  assert.throws(() => parseArgs(["scan", "--home", "/one", "--home", "/two"]), /--home may only be provided once/);
+  assert.deepEqual(parseArgs(["--help"]), { command: "help", positional: [], options: { help: true } });
+});
+
+test("CLI validates risk levels before inventory work", async (t) => {
+  const invalidIo = captureIo();
+  assert.equal(await runCli(["risks", "--level", "nonsense"], invalidIo), 1);
+  assert.match(invalidIo.stderr.join("\n"), /critical, high, medium, low, unknown/);
+
+  const home = fixtureHome(t);
+  const validIo = captureIo();
+  assert.equal(await runCli(["risks", "--level", "high", "--json", "--home", home], validIo), 0);
+  const records = JSON.parse(validIo.stdout.join("\n"));
+  assert.ok(records.every((artifact) => artifact.risk.level === "high"));
+});
+
 test("CLI scan, query, diff, and redacted export are functional", async (t) => {
   const home = fixtureHome(t);
   const io = captureIo();
