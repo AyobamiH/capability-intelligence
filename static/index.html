@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Inspect the capability readiness, evidence, compatibility, and risk of local agent tools." />
+    <meta name="description" content="Inspect what agent capabilities are discoverable locally and what is actually known about their readiness, evidence, and risk." />
     <title>Capability Intelligence</title>
     <link rel="stylesheet" href="/styles.css" />
   </head>
@@ -37,11 +37,25 @@
             <option value="unknown">Unknown</option>
           </select>
         </label>
+        <button id="reset-filters" class="secondary" type="button">Reset filters</button>
       </section>
+
+      <div id="load-state" class="notice" role="status" aria-live="polite" hidden>
+        <span id="load-message"></span>
+        <button id="retry-load" class="secondary" type="button" hidden>Retry</button>
+      </div>
 
       <section class="metrics" id="metrics" aria-label="Inventory summary"></section>
 
       <div class="workspace">
+        <aside class="details" aria-labelledby="details-title">
+          <p class="eyebrow">Evidence detail</p>
+          <h2 id="details-title">Select a capability</h2>
+          <div id="details-body">
+            <p>Choose a capability to inspect lifecycle truth, evidence classification, risk, metadata, and relationships.</p>
+          </div>
+        </aside>
+
         <section class="inventory" aria-labelledby="inventory-title">
           <div class="section-heading">
             <div>
@@ -58,22 +72,47 @@
               <tbody id="capability-rows"></tbody>
             </table>
           </div>
+          <nav class="pagination" aria-label="Capability pages">
+            <button id="previous-page" class="secondary" type="button">Previous</button>
+            <span id="page-status">Page 1</span>
+            <button id="next-page" class="secondary" type="button">Next</button>
+          </nav>
         </section>
-
-        <aside class="details" aria-labelledby="details-title">
-          <p class="eyebrow">Evidence detail</p>
-          <h2 id="details-title">Select a capability</h2>
-          <div id="details-body">
-            <p>Choose a row to inspect lifecycle truth, capability evidence, risk, and structural metadata.</p>
-          </div>
-        </aside>
       </div>
+
+      <section class="diagnostics" aria-labelledby="diagnostics-title">
+        <div class="section-heading">
+          <div><p class="eyebrow">Inventory diagnostics</p><h2 id="diagnostics-title">Evidence gaps and duplicates</h2></div>
+        </div>
+        <div class="diagnostic-grid">
+          <div><h3>Findings</h3><div id="finding-rows"></div></div>
+          <div><h3>Duplicate skill names</h3><div id="duplicate-rows"></div></div>
+        </div>
+      </section>
+
+      <section class="host-diff" aria-labelledby="host-diff-title">
+        <div class="section-heading">
+          <div><p class="eyebrow">Host comparison</p><h2 id="host-diff-title">Capability-name differences</h2></div>
+        </div>
+        <div class="host-controls">
+          <label><span>First host</span><select id="left-host"></select></label>
+          <label><span>Second host</span><select id="right-host"></select></label>
+          <button id="compare-hosts" type="button">Compare hosts</button>
+        </div>
+        <div id="host-diff-results" class="host-results" aria-live="polite"></div>
+      </section>
 
       <section class="sources" aria-labelledby="sources-title">
         <div class="section-heading">
           <div><p class="eyebrow">Coverage ledger</p><h2 id="sources-title">Sources</h2></div>
         </div>
         <div id="source-rows" class="source-grid"></div>
+      </section>
+
+      <section class="methodology" aria-labelledby="methodology-title">
+        <p class="eyebrow">Interpretation boundary</p>
+        <h2 id="methodology-title">Risk is metadata-derived</h2>
+        <p>Risk reflects declared or inferred authority, such as writes, destructive actions, remote effects, and automatic hooks. It is not a security audit or proof that a capability is authenticated, runnable, or reliable.</p>
       </section>
     </main>
 

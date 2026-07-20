@@ -15,7 +15,7 @@ const COMMAND_OPTIONS = Object.freeze({
   duplicates: optionSpec(["json"], ["home"]),
   unlabelled: optionSpec(["json"], ["home"]),
   diff: optionSpec(["json"], ["home", "host"], ["host"]),
-  export: optionSpec(["redacted"], ["home", "output"]),
+  export: optionSpec(["redacted", "force"], ["home", "output"]),
   serve: optionSpec([], ["home", "port"]),
   help: optionSpec([], []),
 });

@@ -18,7 +18,7 @@ Usage:
   capability-intelligence duplicates [--json] [--home PATH]
   capability-intelligence unlabelled [--json] [--home PATH]
   capability-intelligence diff --host HOST --host HOST [--json] [--home PATH]
-  capability-intelligence export --output PATH [--redacted] [--home PATH]
+  capability-intelligence export --output PATH [--redacted] [--force] [--home PATH]
   capability-intelligence serve [--port PORT] [--home PATH]
 
 The default scan is local, read-only, allowlisted, and makes no network request.`;
@@ -97,7 +97,18 @@ export async function runCli(argv, io = defaultIo()) {
       if (!options.output || Array.isArray(options.output)) return fail(io, "export requires --output PATH.");
       const outputPath = path.resolve(options.output);
       const payload = options.redacted ? redactedInventory(inventory) : inventory;
-      fs.writeFileSync(outputPath, `${JSON.stringify(payload, null, 2)}\n`, { mode: 0o600 });
+      try {
+        fs.writeFileSync(outputPath, `${JSON.stringify(payload, null, 2)}\n`, {
+          mode: 0o600,
+          flag: options.force ? "w" : "wx",
+        });
+        fs.chmodSync(outputPath, 0o600);
+      } catch (error) {
+        if (error?.code === "EEXIST") {
+          return fail(io, `Refusing to overwrite existing export: ${outputPath}. Use --force to replace it.`, 3);
+        }
+        throw error;
+      }
       io.out(`Wrote ${options.redacted ? "redacted " : ""}inventory to ${outputPath}`);
       return payload.coverage.status === "passed" ? 0 : 1;
     }

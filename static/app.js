@@ -1,148 +1,114 @@
-let inventory;
-let visible = [];
+import { ui } from "./ui.js";
 
-const elements = {
-  search: document.querySelector("#search"),
-  type: document.querySelector("#type-filter"),
-  risk: document.querySelector("#risk-filter"),
-  coverage: document.querySelector("#coverage"),
-  metrics: document.querySelector("#metrics"),
-  rows: document.querySelector("#capability-rows"),
-  resultCount: document.querySelector("#result-count"),
-  detailsTitle: document.querySelector("#details-title"),
-  detailsBody: document.querySelector("#details-body"),
-  sources: document.querySelector("#source-rows"),
+const state = {
+  offset: 0,
+  limit: 50,
+  initialised: false,
+  controller: null,
+  searchTimer: null,
 };
 
-boot().catch(() => {
-  elements.coverage.textContent = "Inventory unavailable";
-  elements.coverage.className = "coverage failed";
-});
+bindEvents();
+refresh({ includeDiagnostics: true });
 
-async function boot() {
-  const response = await fetch("/api/inventory");
-  if (!response.ok) throw new Error("inventory request failed");
-  inventory = await response.json();
-  setupFilters();
-  renderSummary();
-  renderSources();
-  applyFilters();
-  elements.search.addEventListener("input", applyFilters);
-  elements.type.addEventListener("change", applyFilters);
-  elements.risk.addEventListener("change", applyFilters);
+function bindEvents() {
+  ui.search.addEventListener("input", () => {
+    clearTimeout(state.searchTimer);
+    state.searchTimer = setTimeout(() => resetAndRefresh(), 180);
+  });
+  ui.type.addEventListener("change", resetAndRefresh);
+  ui.risk.addEventListener("change", resetAndRefresh);
+  ui.reset.addEventListener("click", () => {
+    ui.search.value = "";
+    ui.type.value = "";
+    ui.risk.value = "";
+    resetAndRefresh();
+  });
+  ui.retry.addEventListener("click", () => refresh({ includeDiagnostics: !state.initialised }));
+  ui.previous.addEventListener("click", () => {
+    state.offset = Math.max(0, state.offset - state.limit);
+    refresh();
+  });
+  ui.next.addEventListener("click", () => {
+    state.offset += state.limit;
+    refresh();
+  });
+  ui.compare.addEventListener("click", compareHosts);
 }
 
-function setupFilters() {
-  for (const type of Object.keys(inventory.summary.byType)) {
-    const option = document.createElement("option");
-    option.value = type;
-    option.textContent = type.replaceAll("-", " ");
-    elements.type.append(option);
+function resetAndRefresh() {
+  state.offset = 0;
+  refresh();
+}
+
+async function refresh(options = {}) {
+  state.controller?.abort();
+  state.controller = new AbortController();
+  ui.showNotice("Loading capability evidence…");
+  ui.setPaginationDisabled(true);
+
+  try {
+    const request = fetch(`/api/inventory?${inventoryParameters()}`, { signal: state.controller.signal });
+    const diagnosticsRequest = options.includeDiagnostics ? fetch("/api/diagnostics") : null;
+    const response = await request;
+    if (!response.ok) throw new Error("The inventory request was rejected.");
+    const inventory = await response.json();
+
+    if (!state.initialised) {
+      ui.configureInventory(inventory);
+      state.initialised = true;
+    } else {
+      ui.renderSummary(inventory);
+    }
+    ui.renderPage(inventory.page, selectArtifact);
+    ui.hideNotice();
+
+    if (diagnosticsRequest) {
+      const diagnosticsResponse = await diagnosticsRequest;
+      if (!diagnosticsResponse.ok) throw new Error("The diagnostics request was rejected.");
+      ui.renderDiagnostics(await diagnosticsResponse.json());
+    }
+  } catch (error) {
+    if (error.name === "AbortError") return;
+    ui.showNotice(error.message || "Capability evidence could not be loaded.", { error: true, retry: true });
+    ui.renderLoadFailure();
   }
 }
 
-function renderSummary() {
-  const status = inventory.coverage.status;
-  const statusText = `${status === "passed" ? "Complete" : "Review required"} coverage`;
-  const detailText = `${inventory.coverage.unlabelledManifests} unlabelled manifests retained`;
-  const statusLine = document.createElement("span");
-  const detailLine = document.createElement("span");
-  statusLine.textContent = statusText;
-  detailLine.textContent = detailText;
-  detailLine.className = "coverage-detail";
-  elements.coverage.replaceChildren(statusLine, detailLine);
-  elements.coverage.setAttribute("aria-label", `${statusText}; ${detailText}`);
-  elements.coverage.className = `coverage ${status}`;
-  const metrics = [
-    ["Artifacts", inventory.summary.artifacts],
-    ["Skills", inventory.summary.byType.skill || 0],
-    ["Plugins", inventory.summary.byType.plugin || 0],
-    ["Tools", inventory.summary.byType["app-tool"] || 0],
-    ["Connectors", inventory.summary.byType.connector || 0],
-  ];
-  elements.metrics.replaceChildren(...metrics.map(([label, value]) => node("div", "metric", `<span>${escapeHtml(label)}</span><strong>${value}</strong>`)));
-}
-
-function applyFilters() {
-  const query = elements.search.value.trim().toLowerCase();
-  visible = inventory.artifacts.filter((artifact) => {
-    if (elements.type.value && artifact.type !== elements.type.value) return false;
-    if (elements.risk.value && artifact.risk.level !== elements.risk.value) return false;
-    if (!query) return true;
-    const text = [artifact.name, artifact.description, artifact.type, artifact.source, ...artifact.capabilities].join(" ").toLowerCase();
-    return query.split(/\s+/).every((term) => text.includes(term));
-  }).slice(0, 500);
-  renderRows();
-}
-
-function renderRows() {
-  elements.resultCount.textContent = `${visible.length}${visible.length === 500 ? "+" : ""} shown`;
-  elements.rows.replaceChildren(...visible.map((artifact) => {
-    const row = document.createElement("tr");
-    row.tabIndex = 0;
-    row.dataset.id = artifact.id;
-    row.innerHTML = `
-      <td><span class="name">${escapeHtml(artifact.name)}</span><span class="artifact-id">${escapeHtml(artifact.id)}</span></td>
-      <td>${escapeHtml(artifact.type.replaceAll("-", " "))}</td>
-      <td><span class="badge">${escapeHtml(readiness(artifact.lifecycle))}</span></td>
-      <td><span class="badge risk-${escapeHtml(artifact.risk.level)}">${escapeHtml(artifact.risk.level)}</span></td>
-      <td>${escapeHtml(artifact.source)}</td>`;
-    row.addEventListener("click", () => selectArtifact(artifact, row));
-    row.addEventListener("keydown", (event) => {
-      if (event.key === "Enter" || event.key === " ") {
-        event.preventDefault();
-        selectArtifact(artifact, row);
-      }
-    });
-    return row;
-  }));
-}
-
-function selectArtifact(artifact, row) {
-  document.querySelectorAll("tbody tr.selected").forEach((item) => item.classList.remove("selected"));
-  row.classList.add("selected");
-  elements.detailsTitle.textContent = artifact.name;
-  const lifecycleRows = Object.entries(artifact.lifecycle)
-    .map(([label, value]) => `<dt>${escapeHtml(label)}</dt><dd>${escapeHtml(value)}</dd>`)
-    .join("");
-  elements.detailsBody.innerHTML = `
-    <p>${escapeHtml(artifact.description || "No public description supplied.")}</p>
-    <ul class="capability-list">${(artifact.capabilities.length ? artifact.capabilities : ["unknown"]).map((item) => `<li class="badge">${escapeHtml(item)}</li>`).join("")}</ul>
-    <dl>
-      <dt>Type</dt><dd>${escapeHtml(artifact.type)}</dd>
-      <dt>Source</dt><dd>${escapeHtml(artifact.source)}</dd>
-      <dt>Evidence</dt><dd>${escapeHtml(artifact.classificationEvidence)}</dd>
-      <dt>Risk</dt><dd>${escapeHtml(artifact.risk.level)}</dd>
-      ${lifecycleRows}
-    </dl>
-    <p>${escapeHtml(artifact.risk.reasons.join(" · ") || "No elevated risk reason identified from available metadata.")}</p>`;
-}
-
-function renderSources() {
-  elements.sources.replaceChildren(...inventory.sources.map((source) => node("article", "source", `
-    <h3>${escapeHtml(source.id)}</h3>
-    <p>status=${escapeHtml(source.status)}<br>records=${source.records}<br>represented=${source.represented}<br>deduplicated=${source.deduplicated}<br>parse_failures=${source.parseFailures}</p>`)));
-}
-
-function readiness(lifecycle) {
-  for (const state of ["verified", "runnable", "authenticated", "enabled", "installed", "present", "discovered"]) {
-    if (lifecycle[state] === "yes") return state;
+async function selectArtifact(id) {
+  ui.renderDetailLoading();
+  try {
+    const response = await fetch(`/api/artifact?id=${encodeURIComponent(id)}`);
+    if (!response.ok) throw new Error("Capability detail is unavailable.");
+    ui.renderDetails(await response.json());
+    if (window.matchMedia("(max-width: 980px)").matches) {
+      ui.details.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  } catch (error) {
+    ui.renderDetailError(error.message);
   }
-  return "unknown";
 }
 
-function node(tag, className, html) {
-  const element = document.createElement(tag);
-  element.className = className;
-  element.innerHTML = html;
-  return element;
+async function compareHosts() {
+  const left = ui.leftHost.value;
+  const right = ui.rightHost.value;
+  if (!left || !right || left === right) return ui.renderHostDiffError("Choose two different hosts.");
+  ui.renderHostDiffLoading();
+  try {
+    const response = await fetch(`/api/diff?left=${encodeURIComponent(left)}&right=${encodeURIComponent(right)}`);
+    if (!response.ok) throw new Error("Host comparison is unavailable.");
+    ui.renderHostDiff(await response.json());
+  } catch (error) {
+    ui.renderHostDiffError(error.message);
+  }
 }
 
-function escapeHtml(value) {
-  return String(value)
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
+function inventoryParameters() {
+  return new URLSearchParams({
+    q: ui.search.value.trim(),
+    type: ui.type.value,
+    risk: ui.risk.value,
+    offset: String(state.offset),
+    limit: String(state.limit),
+  });
 }

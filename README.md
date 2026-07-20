@@ -19,6 +19,7 @@ The default scanner uses an allowlist rooted at the current user's home director
 - installed Codex plugin metadata
 - cached app-tool schemas and safety annotations
 - cached app-directory connector metadata
+- OpenClaw bundled, local-extension, and managed-package plugin manifests
 - the autonomous coding workflow library's skills, scripts, routes, schemas, templates, and documentation controls
 
 It deliberately excludes authentication state, environment values, sessions, attachments, memories, logs, credentials, shell snapshots, and arbitrary configuration.
@@ -39,6 +40,7 @@ node bin/capability-intelligence.js unlabelled
 node bin/capability-intelligence.js unlabelled --json
 node bin/capability-intelligence.js diff --host codex --host claude
 node bin/capability-intelligence.js export --output /tmp/capabilities.json --redacted
+node bin/capability-intelligence.js export --output /tmp/capabilities.json --redacted --force
 node bin/capability-intelligence.js serve --port 4317
 ```
 
@@ -48,7 +50,11 @@ CLI options are command-specific. Unknown options and repeated singleton options
 
 `unlabelled` makes plugin-manifest metadata gaps inspectable. It lists every catalogue plugin without the standard capability field together with its safe description, manifest category, broad inferred labels, declared integration-surface counts, risk, and lifecycle. Inferred purpose remains inferred, and every unobserved runtime state remains unknown.
 
-All commands are read-only except `export`, which writes the requested report, and `serve`, which starts a local HTTP process. Neither command changes a capability source.
+The loopback dashboard uses the same outcome-matching contract as the CLI. Inventory requests are paginated with an exact total and a default page size of 50. Evidence detail includes structural relationships, while diagnostics and host comparison remain read-only views.
+
+The local API exposes bounded `GET` routes for inventory, coverage, search, artifact detail, diagnostics, and host comparison. It has no mutation route and does not rescan sources while the server is running.
+
+All commands are read-only except `export`, which writes the requested report, and `serve`, which starts a local HTTP process. Export refuses to replace an existing file unless `--force` is explicit and writes the resulting file with owner-only permissions where the platform supports them. Neither command changes a capability source.
 
 ## Lifecycle Truth
 
@@ -58,7 +64,7 @@ Every artifact carries separate state:
 discovered -> present -> installed -> enabled -> authenticated -> runnable -> verified
 ```
 
-`unknown` is a first-class answer. A cached tool schema does not prove authentication. An installed plugin does not prove it is enabled. A manifest description does not prove runtime behaviour.
+`unknown` is a first-class answer. `not_applicable` is distinct from both `no` and `unknown`. A cached tool schema does not prove authentication. An installed plugin does not prove it is enabled. A manifest description does not prove runtime behaviour.
 
 ## Development
 
@@ -67,4 +73,4 @@ npm install --package-lock-only --ignore-scripts
 npm run check
 ```
 
-See [docs/product-contract.md](docs/product-contract.md), [docs/source-coverage.md](docs/source-coverage.md), [docs/privacy.md](docs/privacy.md), and [docs/saas-architecture.md](docs/saas-architecture.md).
+See [docs/product-contract.md](docs/product-contract.md), [docs/source-coverage.md](docs/source-coverage.md), [docs/privacy.md](docs/privacy.md), [docs/product-decisions.md](docs/product-decisions.md), and [docs/saas-architecture.md](docs/saas-architecture.md).

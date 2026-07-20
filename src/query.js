@@ -1,11 +1,41 @@
 import { matchOutcome } from "./classify.js";
 
+export const DEFAULT_PAGE_SIZE = 50;
+export const MAX_PAGE_SIZE = 200;
+
 export function searchArtifacts(inventory, query, limit = 20) {
-  return inventory.artifacts
-    .map((artifact) => ({ artifact, ...matchOutcome(artifact, query) }))
-    .filter((result) => result.score > 0)
-    .sort((left, right) => right.score - left.score || left.artifact.name.localeCompare(right.artifact.name))
-    .slice(0, limit);
+  const value = String(query || "").trim();
+  if (!value) return [];
+  return queryArtifactPage(inventory, { query: value, limit }).items;
+}
+
+export function queryArtifactPage(inventory, options = {}) {
+  const query = String(options.query || "").trim();
+  const type = String(options.type || "").trim();
+  const risk = String(options.risk || "").trim();
+  const offset = boundedInteger(options.offset, 0, Number.MAX_SAFE_INTEGER, 0);
+  const limit = boundedInteger(options.limit, 1, MAX_PAGE_SIZE, DEFAULT_PAGE_SIZE);
+  let records = inventory.artifacts
+    .filter((artifact) => !type || artifact.type === type)
+    .filter((artifact) => !risk || artifact.risk.level === risk)
+    .map((artifact) => ({ artifact, ...(query ? matchOutcome(artifact, query) : { score: 0, matched: [] }) }));
+
+  if (query) records = records.filter((record) => record.score > 0);
+  records.sort((left, right) => query
+    ? right.score - left.score || compareArtifacts(left.artifact, right.artifact)
+    : compareArtifacts(left.artifact, right.artifact));
+
+  return {
+    query,
+    type: type || null,
+    risk: risk || null,
+    offset,
+    limit,
+    total: records.length,
+    hasPrevious: offset > 0,
+    hasNext: offset + limit < records.length,
+    items: records.slice(offset, offset + limit),
+  };
 }
 
 export function inspectArtifact(inventory, id) {
@@ -31,6 +61,10 @@ export function hostDiff(inventory, leftHost, rightHost) {
   return [...byName.values()]
     .filter((record) => record.left !== record.right)
     .sort((left, right) => `${left.type}:${left.name}`.localeCompare(`${right.type}:${right.name}`));
+}
+
+export function inventoryHosts(inventory) {
+  return [...new Set(inventory.artifacts.flatMap((artifact) => artifact.hosts))].sort();
 }
 
 export function unlabelledPluginReport(inventory) {
@@ -61,4 +95,14 @@ export function unlabelledPluginReport(inventory) {
     structuralCount: records.filter((record) => record.classificationEvidence === "structural").length,
     records,
   };
+}
+
+function boundedInteger(value, minimum, maximum, fallback) {
+  const number = Number(value);
+  if (!Number.isInteger(number)) return fallback;
+  return Math.min(maximum, Math.max(minimum, number));
+}
+
+function compareArtifacts(left, right) {
+  return left.name.localeCompare(right.name) || left.id.localeCompare(right.id);
 }

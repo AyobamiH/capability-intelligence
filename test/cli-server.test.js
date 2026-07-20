@@ -67,6 +67,13 @@ test("CLI scan, query, diff, and redacted export are functional", async (t) => {
   const exported = fs.readFileSync(output, "utf8");
   assert.doesNotMatch(exported, /connector-private/);
   assert.doesNotMatch(exported, new RegExp(home.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
+
+  const refusedIo = captureIo();
+  assert.equal(await runCli(["export", "--output", output, "--redacted", "--home", home], refusedIo), 3);
+  assert.match(refusedIo.stderr.join("\n"), /Refusing to overwrite/);
+  const forcedIo = captureIo();
+  assert.equal(await runCli(["export", "--output", output, "--redacted", "--force", "--home", home], forcedIo), 0);
+  if (process.platform !== "win32") assert.equal(fs.statSync(output).mode & 0o777, 0o600);
 });
 
 test("HTTP handler exposes health, inventory, coverage, and search without a socket", async (t) => {
@@ -78,13 +85,25 @@ test("HTTP handler exposes health, inventory, coverage, and search without a soc
   const search = invokeHandler(handler, "/api/search?q=product%20video");
   const noMatch = invokeHandler(handler, "/api/search?q=qxvplm");
   const emptySearch = invokeHandler(handler, "/api/search");
-  const full = invokeHandler(handler, "/api/inventory");
+  const firstPage = invokeHandler(handler, "/api/inventory?limit=2");
+  const secondPage = invokeHandler(handler, "/api/inventory?limit=2&offset=2");
+  const detail = invokeHandler(handler, "/api/artifact?id=plugin%3Aalpha");
+  const diagnostics = invokeHandler(handler, "/api/diagnostics");
+  const diff = invokeHandler(handler, "/api/diff?left=codex&right=claude");
   assert.equal(health.status, "ok");
   assert.equal(coverage.status, "passed");
   assert.ok(search.some((result) => result.artifact.name === "Alpha Video"));
   assert.deepEqual(noMatch, []);
   assert.deepEqual(emptySearch, []);
-  assert.equal(full.artifacts.length, inventory.artifacts.length);
+  assert.equal(firstPage.page.items.length, 2);
+  assert.equal(firstPage.page.total, inventory.artifacts.length);
+  assert.equal(secondPage.page.offset, 2);
+  assert.equal("artifacts" in firstPage, false);
+  assert.equal(detail.artifact.name, "Alpha Video");
+  assert.ok(Array.isArray(diagnostics.findings));
+  assert.ok(diff.records.some((record) => record.name === "Codex only"));
+  assert.equal(invokeRaw(handler, "/api/inventory?limit=500").status, 400);
+  assert.equal(invokeRaw(handler, "/api/artifact").status, 400);
 });
 
 test("dashboard CSS reflows without globally hiding overflow", () => {
@@ -93,8 +112,20 @@ test("dashboard CSS reflows without globally hiding overflow", () => {
   assert.doesNotMatch(css, /body\s*\{[^}]*overflow-x:\s*hidden/s);
   assert.match(css, /@media \(max-width: 680px\)/);
   assert.match(css, /\.table-wrap \{ overflow-x: auto; \}/);
+  assert.match(css, /grid-template-areas: "details" "inventory"/);
   assert.match(html, /Find an outcome or capability/);
   assert.match(html, /Evidence detail/);
+  assert.match(html, /Reset filters/);
+  assert.match(html, /Capability-name differences/);
+  assert.doesNotMatch(html, /Complete coverage/);
+});
+
+test("package documentation allowlist excludes local reconnaissance drafts", () => {
+  const packageJson = JSON.parse(fs.readFileSync(new URL("../package.json", import.meta.url), "utf8"));
+  assert.equal(packageJson.files.includes("docs/"), false);
+  assert.ok(packageJson.files.includes("docs/product-recon/README.md"));
+  assert.ok(packageJson.files.includes("docs/product-recon/UNLABELLED_PLUGIN_MANIFEST_AUDIT.md"));
+  assert.equal(packageJson.files.some((entry) => /HANDOFF|DOSSIER|OPEN_QUESTIONS|product-model/.test(entry)), false);
 });
 
 function captureIo() {
@@ -104,6 +135,12 @@ function captureIo() {
 }
 
 function invokeHandler(handler, pathname) {
+  const result = invokeRaw(handler, pathname);
+  assert.equal(result.status, 200);
+  return result.body;
+}
+
+function invokeRaw(handler, pathname) {
   let status;
   let body = "";
   handler(
@@ -113,6 +150,5 @@ function invokeHandler(handler, pathname) {
       end(value) { body += value || ""; },
     },
   );
-  assert.equal(status, 200);
-  return JSON.parse(body);
+  return { status, body: JSON.parse(body) };
 }

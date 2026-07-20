@@ -1,5 +1,9 @@
 # Unlabelled Plugin Manifest Purpose Audit
 
+## Provenance
+
+This point-in-time audit entered the local repository in commit `5ded92a` (`Expose unlabelled plugin purpose metadata`). It is a retained catalogue-analysis artifact, not a live runtime report. Run `capability-intelligence unlabelled` for the current environment.
+
 ## Scope
 
 This local, read-only audit reviewed all 111 Codex catalogue plugin manifests that omit the standard manifest capability field. The source inventory was generated during the final local validation run.

@@ -9,6 +9,7 @@
 | Codex/Agents/Claude skill roots | Skill metadata and structural resources | Read-only |
 | App tool cache | Tool names, descriptions, schemas counts, and safety annotations | Read-only |
 | App directory cache | De-duplicated connector names, descriptions, availability flags, and plugin labels | Read-only |
+| OpenClaw native plugin manifests | Bundled extensions, local extensions, and managed `@openclaw` package manifests | Read-only |
 | Coding workflow library | Skills, scripts, routes, schemas, templates, and control docs | Read-only |
 
 ## Explicit Exclusions
@@ -63,6 +64,29 @@ The first complete local scan on 16 July 2026 reconciled:
 ```
 
 These numbers describe one local environment at one point in time. They are inventory evidence, not proof that every capability is authenticated, runnable, or reliable.
+
+## Current Maturity Snapshot
+
+A strict scan on 20 July 2026 accounted for:
+
+```text
+6,558 capability artifacts
+13 available source surfaces
+249 plugin artifacts
+723 skills
+252 cached app-tool definitions
+4,838 de-duplicated connector identities
+69 OpenClaw native plugin manifests
+39 coding-workflow routes
+111 unlabelled Codex catalogue manifests retained
+0 unaccounted source records
+```
+
+This is a later environment snapshot, not a replacement for the dated hard-cutover baseline. Counts will change as local catalogues, caches, skills, plugins, and workflow resources change.
+
+## OpenClaw Boundary
+
+The OpenClaw adapter reads only `openclaw.plugin.json` files in three allowlisted layouts. It does not read `openclaw.json`, agent databases, channel credentials, sessions, auth stores, logs, or request payloads. `enabledByDefault` and startup declarations are retained as manifest metadata; lifecycle enablement and authentication remain `unknown` until a separate safe runtime-evidence contract exists.
 
 ## Coverage Failure
 

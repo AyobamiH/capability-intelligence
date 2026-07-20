@@ -18,25 +18,136 @@
     "schemaVersion": { "const": "1.0" },
     "generatedAt": { "type": "string", "format": "date-time" },
     "mode": { "const": "local-read-only" },
+    "summary": {
+      "type": "object",
+      "required": ["artifacts", "sourcesAvailable", "sourcesAbsent", "byType", "byRisk", "lifecycleYes"],
+      "properties": {
+        "artifacts": { "$ref": "#/$defs/count" },
+        "sourcesAvailable": { "$ref": "#/$defs/count" },
+        "sourcesAbsent": { "$ref": "#/$defs/count" },
+        "byType": { "$ref": "#/$defs/countMap" },
+        "byRisk": { "$ref": "#/$defs/countMap" },
+        "lifecycleYes": { "$ref": "#/$defs/countMap" }
+      }
+    },
     "sources": {
       "type": "array",
-      "items": {
-        "type": "object",
-        "required": ["id", "status", "records", "represented", "deduplicated", "parseFailures"]
-      }
+      "items": { "$ref": "#/$defs/source" }
     },
     "artifacts": {
       "type": "array",
-      "items": {
-        "type": "object",
-        "required": ["id", "type", "name", "source", "capabilities", "classificationEvidence", "lifecycle", "risk", "metadata"]
+      "items": { "$ref": "#/$defs/artifact" }
+    },
+    "graph": {
+      "type": "object",
+      "required": ["edges", "duplicates"],
+      "properties": {
+        "edges": { "type": "array", "items": { "$ref": "#/$defs/edge" } },
+        "duplicates": { "type": "array", "items": { "$ref": "#/$defs/duplicate" } }
+      }
+    },
+    "findings": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/finding" }
+    },
+    "coverage": { "$ref": "#/$defs/coverage" }
+  },
+  "$defs": {
+    "count": { "type": "integer", "minimum": 0 },
+    "countMap": {
+      "type": "object",
+      "additionalProperties": { "$ref": "#/$defs/count" }
+    },
+    "source": {
+      "type": "object",
+      "required": ["id", "status", "records", "represented", "deduplicated", "parseFailures"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "status": { "enum": ["available", "absent", "failed"] },
+        "records": { "$ref": "#/$defs/count" },
+        "represented": { "$ref": "#/$defs/count" },
+        "deduplicated": { "$ref": "#/$defs/count" },
+        "parseFailures": { "$ref": "#/$defs/count" },
+        "metadata": { "type": "object" }
+      }
+    },
+    "artifact": {
+      "type": "object",
+      "required": ["id", "type", "name", "description", "source", "hosts", "capabilities", "classificationEvidence", "lifecycle", "risk", "metadata"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "type": { "type": "string", "minLength": 1 },
+        "name": { "type": "string", "minLength": 1 },
+        "description": { "type": "string" },
+        "source": { "type": "string", "minLength": 1 },
+        "hosts": { "type": "array", "items": { "type": "string", "minLength": 1 }, "uniqueItems": true },
+        "capabilities": { "type": "array", "items": { "type": "string", "minLength": 1 }, "uniqueItems": true },
+        "classificationEvidence": { "enum": ["declared", "structural", "inferred", "observed", "unknown"] },
+        "lifecycle": { "$ref": "#/$defs/lifecycle" },
+        "risk": { "$ref": "#/$defs/risk" },
+        "metadata": { "type": "object" }
+      }
+    },
+    "lifecycle": {
+      "type": "object",
+      "required": ["discovered", "present", "installed", "enabled", "authenticated", "runnable", "verified"],
+      "properties": {
+        "discovered": { "$ref": "#/$defs/lifecycleValue" },
+        "present": { "$ref": "#/$defs/lifecycleValue" },
+        "installed": { "$ref": "#/$defs/lifecycleValue" },
+        "enabled": { "$ref": "#/$defs/lifecycleValue" },
+        "authenticated": { "$ref": "#/$defs/lifecycleValue" },
+        "runnable": { "$ref": "#/$defs/lifecycleValue" },
+        "verified": { "$ref": "#/$defs/lifecycleValue" }
+      },
+      "additionalProperties": false
+    },
+    "lifecycleValue": { "enum": ["yes", "no", "unknown", "not_applicable"] },
+    "risk": {
+      "type": "object",
+      "required": ["level", "reasons"],
+      "properties": {
+        "level": { "enum": ["critical", "high", "medium", "low", "unknown"] },
+        "reasons": { "type": "array", "items": { "type": "string", "minLength": 1 }, "uniqueItems": true }
+      },
+      "additionalProperties": false
+    },
+    "edge": {
+      "type": "object",
+      "required": ["from", "to", "type"],
+      "properties": {
+        "from": { "type": "string", "minLength": 1 },
+        "to": { "type": "string", "minLength": 1 },
+        "type": { "type": "string", "minLength": 1 }
+      }
+    },
+    "duplicate": {
+      "type": "object",
+      "required": ["name", "artifactIds"],
+      "properties": {
+        "name": { "type": "string", "minLength": 1 },
+        "artifactIds": { "type": "array", "items": { "type": "string", "minLength": 1 }, "minItems": 2, "uniqueItems": true }
+      }
+    },
+    "finding": {
+      "type": "object",
+      "required": ["level", "code", "source", "message"],
+      "properties": {
+        "level": { "enum": ["error", "warning", "info"] },
+        "code": { "type": "string", "minLength": 1 },
+        "source": { "type": "string", "minLength": 1 },
+        "message": { "type": "string", "minLength": 1 }
       }
     },
     "coverage": {
       "type": "object",
       "required": ["status", "failures", "unlabelledManifests", "sourceCount", "artifactCount"],
       "properties": {
-        "status": { "enum": ["passed", "failed"] }
+        "status": { "enum": ["passed", "failed"] },
+        "failures": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+        "unlabelledManifests": { "$ref": "#/$defs/count" },
+        "sourceCount": { "$ref": "#/$defs/count" },
+        "artifactCount": { "$ref": "#/$defs/count" }
       }
     }
   },

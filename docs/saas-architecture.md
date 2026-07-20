@@ -1,5 +1,9 @@
 # SaaS Architecture
 
+## Status
+
+This is an architectural direction, not a deployed service or current release commitment. The implemented product is a private local alpha with no configured remote, public licence, hosted control plane, accounts, billing, or organisation roles.
+
 ## Local Plane
 
 - allowlisted collectors
@@ -14,6 +18,8 @@
 
 ## Hosted Plane
 
+Not implemented:
+
 - public capability metadata
 - private team catalogues
 - outcome-to-capability mappings
@@ -25,6 +31,8 @@
 ## Boundary
 
 The hosted service does not execute local tools. A chosen agent host remains responsible for execution and its own approval system.
+
+No local collector may silently upload inventory. Any future transfer must be an explicit operator action using a versioned, validated, redacted payload. A local export remains team-local evidence until a separate security and licensing decision approves broader distribution.
 
 ## Integration Direction
 

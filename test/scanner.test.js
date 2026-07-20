@@ -3,7 +3,8 @@ import fs from "node:fs";
 import path from "node:path";
 import test from "node:test";
 import { scanEnvironment, findUnsafeOutput, redactedInventory } from "../src/scanner.js";
-import { hostDiff, inspectArtifact, searchArtifacts, unlabelledPluginReport } from "../src/query.js";
+import { hostDiff, inspectArtifact, queryArtifactPage, searchArtifacts, unlabelledPluginReport } from "../src/query.js";
+import { validateInventoryShape } from "../src/validation.js";
 import { fixtureHome } from "./helpers/fixture-home.js";
 
 const CLOCK = () => new Date("2026-07-16T12:00:00.000Z");
@@ -13,7 +14,9 @@ test("a complete synthetic environment is represented without silent loss", (t) 
   const inventory = scanEnvironment({ home, clock: CLOCK });
   assert.equal(inventory.coverage.status, "passed");
   assert.equal(inventory.generatedAt, "2026-07-16T12:00:00.000Z");
-  assert.equal(inventory.artifacts.filter((artifact) => artifact.type === "plugin").length, 3);
+  assert.equal(inventory.artifacts.filter(
+    (artifact) => artifact.source === "codex-plugin-catalog" && artifact.type === "plugin",
+  ).length, 3);
   assert.equal(inventory.artifacts.filter((artifact) => artifact.type === "plugin-installation").length, 2);
   assert.equal(inventory.artifacts.filter((artifact) => artifact.type === "app-integration").length, 3);
   assert.equal(inventory.artifacts.filter((artifact) => artifact.type === "mcp-server").length, 3);
@@ -21,7 +24,19 @@ test("a complete synthetic environment is represented without silent loss", (t) 
   assert.equal(inventory.artifacts.filter((artifact) => artifact.type === "app-tool").length, 2);
   assert.equal(inventory.artifacts.filter((artifact) => artifact.type === "connector").length, 2);
   assert.ok(inventory.artifacts.some((artifact) => artifact.source === "coding-workflow-library"));
+  assert.equal(inventory.artifacts.filter((artifact) => artifact.source === "openclaw-native-plugins").length, 3);
   assert.deepEqual(findUnsafeOutput(inventory), []);
+  assert.deepEqual(validateInventoryShape(inventory), []);
+});
+
+test("OpenClaw plugin manifests are represented without configuration or runtime overclaiming", (t) => {
+  const inventory = scanEnvironment({ home: fixtureHome(t), clock: CLOCK });
+  const records = inventory.artifacts.filter((artifact) => artifact.source === "openclaw-native-plugins");
+  assert.deepEqual(records.map((artifact) => artifact.metadata.origin).sort(), ["bundled", "local-extension", "managed-npm"]);
+  assert.ok(records.every((artifact) => artifact.hosts.includes("openclaw")));
+  assert.ok(records.every((artifact) => artifact.lifecycle.enabled === "unknown"));
+  assert.ok(records.every((artifact) => artifact.lifecycle.authenticated === "unknown"));
+  assert.equal(JSON.stringify(records).includes("configSchema"), false);
 });
 
 test("catalogue integrations and installed plugin resources are first-class artifacts", (t) => {
@@ -112,6 +127,18 @@ test("outcome search does not manufacture relevance from readiness", (t) => {
   assert.deepEqual(searchArtifacts(inventory, "qxvplm"), []);
 });
 
+test("artifact pages share search semantics and remain bounded", (t) => {
+  const inventory = scanEnvironment({ home: fixtureHome(t), clock: CLOCK });
+  const first = queryArtifactPage(inventory, { limit: 2 });
+  const second = queryArtifactPage(inventory, { offset: 2, limit: 2 });
+  const query = queryArtifactPage(inventory, { query: "product video", limit: 2 });
+  assert.equal(first.items.length, 2);
+  assert.equal(first.hasNext, true);
+  assert.equal(second.offset, 2);
+  assert.ok(query.items.some((result) => result.artifact.name === "Alpha Video"));
+  assert.ok(query.items.every((result) => result.score > 0));
+});
+
 test("inspection includes graph relationships", (t) => {
   const inventory = scanEnvironment({ home: fixtureHome(t), clock: CLOCK });
   const result = inspectArtifact(inventory, "plugin:alpha");
@@ -145,6 +172,16 @@ test("unsafe values and forbidden output fields are detected", () => {
   assert.ok(findUnsafeOutput({ authorizationHeader: "withheld" }).length > 0);
   assert.ok(findUnsafeOutput({ value: "/home/private-user/secret" }).length > 0);
   assert.ok(findUnsafeOutput({ value: "eyJabc.def.ghi" }).length > 0);
+});
+
+test("detailed inventory validation rejects invalid lifecycle and source shapes", (t) => {
+  const inventory = scanEnvironment({ home: fixtureHome(t), clock: CLOCK });
+  const invalid = structuredClone(inventory);
+  invalid.sources[0].records = -1;
+  invalid.artifacts[0].lifecycle.verified = "probably";
+  const failures = validateInventoryShape(invalid);
+  assert.ok(failures.some((failure) => failure.includes("records")));
+  assert.ok(failures.some((failure) => failure.includes("verified")));
 });
 
 test("equivalent scans produce byte-equivalent JSON", (t) => {

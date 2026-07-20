@@ -81,6 +81,29 @@ export function fixtureHome(t) {
   writeJson(path.join(workflow, "routes/skill-routes.json"), {
     routes: [{ id: "build-verify", skill_file: "skill-files/build-verify-skill.md", ledger_states_handled: ["implemented"], explicit_permission_required: false }],
   });
+
+  writeJson(path.join(home, ".npm-global/lib/node_modules/openclaw/dist/extensions/native-model/openclaw.plugin.json"), {
+    id: "native-model",
+    name: "Native model provider",
+    description: "Provides local model catalogue metadata.",
+    enabledByDefault: true,
+    providers: ["fixture-provider"],
+    configSchema: { type: "object", properties: {} },
+  });
+  writeJson(path.join(home, ".openclaw/extensions/local-channel/openclaw.plugin.json"), {
+    id: "local-channel",
+    name: "Local channel",
+    description: "Connects a local communication channel.",
+    channels: ["fixture-channel"],
+    configSchema: { type: "object", properties: {} },
+  });
+  writeJson(path.join(home, ".openclaw/npm/projects/codex/node_modules/@openclaw/codex/openclaw.plugin.json"), {
+    id: "codex",
+    name: "Codex runtime",
+    description: "Runs bounded coding agent sessions.",
+    commandAliases: ["codex"],
+    configSchema: { type: "object", properties: {} },
+  });
   return home;
 }
 

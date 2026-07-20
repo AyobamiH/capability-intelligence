@@ -6,8 +6,10 @@ import { scanAppTools } from "./adapters/app-tools.js";
 import { scanConnectors } from "./adapters/connectors.js";
 import { scanWorkflowLibrary } from "./adapters/workflow-library.js";
 import { scanInstalledPlugins } from "./adapters/installed-plugins.js";
+import { scanOpenClawNativePlugins } from "./adapters/openclaw-native.js";
 import { buildGraph } from "./graph.js";
 import { stableSort, toIso } from "./utils.js";
+import { validateInventoryShape } from "./validation.js";
 
 const ADAPTERS = [
   scanPluginCatalog,
@@ -16,6 +18,7 @@ const ADAPTERS = [
   scanAppTools,
   scanConnectors,
   scanWorkflowLibrary,
+  scanOpenClawNativePlugins,
 ];
 const FORBIDDEN_KEYS = /^(authorization|authorizationHeader|connectorId|serverOrigin|installUrl|apiKey|secretValue|token|rawPayload)$/i;
 const UNSAFE_VALUE_PATTERNS = [
@@ -31,6 +34,24 @@ export function defaultConfig(home = os.homedir()) {
     home,
     codexRoot,
     workflowLibraryRoot: path.join(home, ".openclaw", "skills", "coding-workflow-library"),
+    openclawPluginRoots: [
+      {
+        id: "openclaw-bundled-plugins",
+        kind: "bundled",
+        path: path.join(home, ".npm-global", "lib", "node_modules", "openclaw", "dist", "extensions"),
+      },
+      {
+        id: "openclaw-local-extensions",
+        kind: "local-extension",
+        path: path.join(home, ".openclaw", "extensions"),
+      },
+      {
+        id: "openclaw-managed-plugins",
+        kind: "managed-npm",
+        layout: "managed-npm",
+        path: path.join(home, ".openclaw", "npm", "projects"),
+      },
+    ],
     skillRoots: [
       { id: "codex-user-skills", label: "codex-skills", path: path.join(codexRoot, "skills"), hosts: ["codex"] },
       { id: "shared-agent-skills", label: "agent-skills", path: path.join(home, ".agents", "skills"), hosts: ["codex", "claude", "openclaw"] },
@@ -94,6 +115,13 @@ export function scanEnvironment(options = {}) {
     artifacts: sortedArtifacts,
     graph,
     findings: stableSort(findings, (finding) => `${finding.level}:${finding.code}:${finding.source}`),
+    coverage: {
+      status: "passed",
+      failures: [],
+      unlabelledManifests: 0,
+      sourceCount: sources.length,
+      artifactCount: sortedArtifacts.length,
+    },
   };
   inventory.coverage = evaluateCoverage(inventory);
   return inventory;
@@ -116,6 +144,7 @@ export function evaluateCoverage(inventory) {
   }
   const unsafe = findUnsafeOutput(inventory);
   failures.push(...unsafe);
+  failures.push(...validateInventoryShape(inventory).map((failure) => `schema: ${failure}`));
   const manifestSource = inventory.sources.find((source) => source.id === "codex-plugin-manifests");
   const unlabelledArtifacts = inventory.artifacts.filter(
     (artifact) => artifact.type === "plugin" && artifact.metadata.manifestCapabilityStatus === "unlabelled",
