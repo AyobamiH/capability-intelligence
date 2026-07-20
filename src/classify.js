@@ -14,12 +14,38 @@ const CONCEPTS = {
 };
 
 export function inferCapabilities(...values) {
-  const haystack = values.filter(Boolean).join(" ").toLowerCase();
+  const fields = values.filter(Boolean).map(normalisedTokens);
   const labels = [];
   for (const [label, words] of Object.entries(CONCEPTS)) {
-    if (words.some((word) => haystack.includes(word))) labels.push(label);
+    if (words.some((word) => fields.some((tokens) => containsTerm(tokens, word)))) labels.push(label);
   }
   return unique(labels);
+}
+
+function normalisedTokens(value) {
+  return slugify(value).split("-").filter(Boolean);
+}
+
+function containsTerm(tokens, term) {
+  const expected = normalisedTokens(term);
+  if (!expected.length || expected.length > tokens.length) return false;
+  return tokens.some((_, index) =>
+    expected.every((word, offset) => tokenMatches(tokens[index + offset], word)),
+  );
+}
+
+function tokenMatches(actual, expected) {
+  if (actual === expected) return true;
+  if (expected.length <= 2) return false;
+  const forms = [
+    `${expected}s`,
+    `${expected}es`,
+    `${expected}ed`,
+    `${expected}ing`,
+  ];
+  if (expected.endsWith("e")) forms.push(`${expected.slice(0, -1)}ing`);
+  if (expected.endsWith("y")) forms.push(`${expected.slice(0, -1)}ies`);
+  return forms.includes(actual);
 }
 
 export function outcomeTokens(query) {

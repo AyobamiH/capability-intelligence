@@ -13,6 +13,7 @@ const COMMAND_OPTIONS = Object.freeze({
   doctor: optionSpec(["json"], ["home"]),
   risks: optionSpec(["json"], ["home", "level"]),
   duplicates: optionSpec(["json"], ["home"]),
+  unlabelled: optionSpec(["json"], ["home"]),
   diff: optionSpec(["json"], ["home", "host"], ["host"]),
   export: optionSpec(["redacted"], ["home", "output"]),
   serve: optionSpec([], ["home", "port"]),

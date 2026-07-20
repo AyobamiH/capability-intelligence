@@ -41,6 +41,8 @@ lifecycle.verified: unknown
 
 The exact count is environment-dependent and is recalculated on every scan.
 
+Use `capability-intelligence unlabelled` or `capability-intelligence unlabelled --json` to inspect the retained set. The report uses already-normalised safe metadata and does not inspect credentials, private configuration, or capability runtime state. A description or inferred broad label explains likely purpose only; it does not prove installation, authentication, runnability, or verification.
+
 ## Initial Hard-Cutover Baseline
 
 The first complete local scan on 16 July 2026 reconciled:

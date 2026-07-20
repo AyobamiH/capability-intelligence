@@ -28,6 +28,7 @@ It consumes metadata from those systems and explains what a specific environment
 10. No default command invokes an external capability.
 11. Outcome search requires a positive lexical or concept match; readiness may rank relevant results but never creates relevance.
 12. CLI commands reject unsupported options, repeated singleton options, and risk levels outside the documented risk model before scanning source metadata.
+13. Unlabelled plugin manifests remain directly inspectable with their safe descriptions, categories, inferred broad labels, integration surfaces, and unknown runtime states.
 
 ## Artifact Types
 

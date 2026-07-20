@@ -40,6 +40,30 @@ export function renderSearch(results, query) {
   return lines.join("\n");
 }
 
+export function renderUnlabelledPlugins(report) {
+  const lines = [
+    `Unlabelled plugin manifests: ${report.count}`,
+    `At least one broad label inferred: ${report.inferredCount}`,
+    `Purpose retained through category and description only: ${report.structuralCount}`,
+  ];
+  for (const record of report.records) {
+    const surfaces = Object.entries(record.surfaces)
+      .map(([name, count]) => `${name}=${count}`)
+      .join(", ") || "none";
+    lines.push(
+      "",
+      `${record.name} (${record.id})`,
+      `  Category: ${record.manifestCategory || "uncategorised"}`,
+      `  Broad capabilities: ${record.broadCapabilities.join(", ") || "not inferred"}`,
+      `  Evidence: ${record.classificationEvidence}`,
+      `  Surfaces: ${surfaces}`,
+      `  Lifecycle: installed=${record.lifecycle.installed}; verified=${record.lifecycle.verified}`,
+      `  Description: ${record.description}`,
+    );
+  }
+  return lines.join("\n");
+}
+
 export function readinessLabel(lifecycle) {
   const states = ["verified", "runnable", "authenticated", "enabled", "installed", "present", "discovered"];
   for (const state of states) if (lifecycle[state] === "yes") return state;

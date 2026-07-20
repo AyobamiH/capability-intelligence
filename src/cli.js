@@ -2,8 +2,8 @@ import fs from "node:fs";
 import path from "node:path";
 import { parseCliArgs, validateCliOptions } from "./cli-options.js";
 import { scanEnvironment, redactedInventory } from "./scanner.js";
-import { hostDiff, inspectArtifact, searchArtifacts } from "./query.js";
-import { renderInventory, renderSearch, renderSummary } from "./render.js";
+import { hostDiff, inspectArtifact, searchArtifacts, unlabelledPluginReport } from "./query.js";
+import { renderInventory, renderSearch, renderSummary, renderUnlabelledPlugins } from "./render.js";
 import { startServer } from "./server.js";
 
 const HELP = `Capability Intelligence
@@ -16,6 +16,7 @@ Usage:
   capability-intelligence doctor [--json] [--home PATH]
   capability-intelligence risks [--level critical|high|medium|low|unknown] [--json] [--home PATH]
   capability-intelligence duplicates [--json] [--home PATH]
+  capability-intelligence unlabelled [--json] [--home PATH]
   capability-intelligence diff --host HOST --host HOST [--json] [--home PATH]
   capability-intelligence export --output PATH [--redacted] [--home PATH]
   capability-intelligence serve [--port PORT] [--home PATH]
@@ -80,6 +81,11 @@ export async function runCli(argv, io = defaultIo()) {
     case "duplicates":
       emit(io, options.json ? inventory.graph.duplicates : renderDuplicates(inventory.graph.duplicates), options.json);
       return 0;
+    case "unlabelled": {
+      const report = unlabelledPluginReport(inventory);
+      emit(io, options.json ? report : renderUnlabelledPlugins(report), options.json);
+      return 0;
+    }
     case "diff": {
       const hosts = arrayOption(options.host);
       if (hosts.length !== 2) return fail(io, "diff requires exactly two --host values.");

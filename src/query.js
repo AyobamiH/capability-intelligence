@@ -32,3 +32,33 @@ export function hostDiff(inventory, leftHost, rightHost) {
     .filter((record) => record.left !== record.right)
     .sort((left, right) => `${left.type}:${left.name}`.localeCompare(`${right.type}:${right.name}`));
 }
+
+export function unlabelledPluginReport(inventory) {
+  const records = inventory.artifacts
+    .filter((artifact) => artifact.type === "plugin"
+      && artifact.source === "codex-plugin-catalog"
+      && artifact.metadata?.manifestCapabilityStatus === "unlabelled")
+    .map((artifact) => ({
+      id: artifact.id,
+      name: artifact.name,
+      description: artifact.description,
+      manifestCategory: artifact.metadata.category || null,
+      broadCapabilities: artifact.capabilities,
+      classificationEvidence: artifact.classificationEvidence,
+      surfaces: artifact.metadata.surfaces || {},
+      risk: artifact.risk,
+      lifecycle: artifact.lifecycle,
+    }))
+    .sort((left, right) => {
+      const category = (left.manifestCategory || "").localeCompare(right.manifestCategory || "");
+      return category || left.name.localeCompare(right.name);
+    });
+
+  return {
+    generatedAt: inventory.generatedAt,
+    count: records.length,
+    inferredCount: records.filter((record) => record.classificationEvidence === "inferred").length,
+    structuralCount: records.filter((record) => record.classificationEvidence === "structural").length,
+    records,
+  };
+}

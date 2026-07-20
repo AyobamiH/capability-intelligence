@@ -3,7 +3,7 @@ import fs from "node:fs";
 import path from "node:path";
 import test from "node:test";
 import { scanEnvironment, findUnsafeOutput, redactedInventory } from "../src/scanner.js";
-import { hostDiff, inspectArtifact, searchArtifacts } from "../src/query.js";
+import { hostDiff, inspectArtifact, searchArtifacts, unlabelledPluginReport } from "../src/query.js";
 import { fixtureHome } from "./helpers/fixture-home.js";
 
 const CLOCK = () => new Date("2026-07-16T12:00:00.000Z");
@@ -41,6 +41,20 @@ test("unlabelled manifests remain visible with unknown verification", (t) => {
   assert.equal(beta.metadata.manifestCapabilityStatus, "unlabelled");
   assert.ok(["inferred", "structural"].includes(beta.classificationEvidence));
   assert.equal(beta.lifecycle.verified, "unknown");
+});
+
+test("unlabelled manifest report exposes purpose metadata without lifecycle overclaiming", (t) => {
+  const inventory = scanEnvironment({ home: fixtureHome(t), clock: CLOCK });
+  const report = unlabelledPluginReport(inventory);
+  assert.equal(report.generatedAt, "2026-07-16T12:00:00.000Z");
+  assert.equal(report.count, 2);
+  assert.equal(report.inferredCount, 2);
+  assert.equal(report.structuralCount, 0);
+  assert.deepEqual(report.records.map((record) => record.name), ["Beta", "Gamma"]);
+  assert.ok(report.records.every((record) => record.lifecycle.verified === "unknown"));
+  assert.ok(report.records.every((record) => record.lifecycle.authenticated === "unknown"));
+  assert.ok(report.records.every((record) => !("relativeLocation" in record)));
+  assert.deepEqual(findUnsafeOutput(report), []);
 });
 
 test("installed does not imply enabled, authenticated, runnable, or verified", (t) => {

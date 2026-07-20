@@ -35,6 +35,8 @@ node bin/capability-intelligence.js inspect plugin:hyperframes
 node bin/capability-intelligence.js doctor
 node bin/capability-intelligence.js risks --level high
 node bin/capability-intelligence.js duplicates
+node bin/capability-intelligence.js unlabelled
+node bin/capability-intelligence.js unlabelled --json
 node bin/capability-intelligence.js diff --host codex --host claude
 node bin/capability-intelligence.js export --output /tmp/capabilities.json --redacted
 node bin/capability-intelligence.js serve --port 4317
@@ -43,6 +45,8 @@ node bin/capability-intelligence.js serve --port 4317
 Outcome search returns only artifacts with a positive lexical or concept match. Lifecycle readiness helps order those relevant results; empty or unrelated queries do not receive readiness-ranked fallback results.
 
 CLI options are command-specific. Unknown options and repeated singleton options fail instead of being ignored. `risks --level` accepts only `critical`, `high`, `medium`, `low`, or `unknown`.
+
+`unlabelled` makes plugin-manifest metadata gaps inspectable. It lists every catalogue plugin without the standard capability field together with its safe description, manifest category, broad inferred labels, declared integration-surface counts, risk, and lifecycle. Inferred purpose remains inferred, and every unobserved runtime state remains unknown.
 
 All commands are read-only except `export`, which writes the requested report, and `serve`, which starts a local HTTP process. Neither command changes a capability source.
 

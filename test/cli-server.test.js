@@ -49,6 +49,18 @@ test("CLI scan, query, diff, and redacted export are functional", async (t) => {
   assert.equal(await runCli(["diff", "--host", "codex", "--host", "claude", "--home", home], diffIo), 0);
   assert.match(diffIo.stdout.join("\n"), /Codex only/);
 
+  const unlabelledIo = captureIo();
+  assert.equal(await runCli(["unlabelled", "--home", home], unlabelledIo), 0);
+  assert.match(unlabelledIo.stdout.join("\n"), /Unlabelled plugin manifests: 2/);
+  assert.match(unlabelledIo.stdout.join("\n"), /At least one broad label inferred: 2/);
+  assert.match(unlabelledIo.stdout.join("\n"), /Broad capabilities: code/);
+
+  const unlabelledJsonIo = captureIo();
+  assert.equal(await runCli(["unlabelled", "--json", "--home", home], unlabelledJsonIo), 0);
+  const unlabelled = JSON.parse(unlabelledJsonIo.stdout.join("\n"));
+  assert.equal(unlabelled.count, 2);
+  assert.ok(unlabelled.records.every((record) => record.lifecycle.verified === "unknown"));
+
   const output = path.join(home, "redacted.json");
   const exportIo = captureIo();
   assert.equal(await runCli(["export", "--output", output, "--redacted", "--home", home], exportIo), 0);
