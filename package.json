@@ -1,8 +1,27 @@
 {
   "name": "capability-intelligence",
   "version": "0.1.0",
-  "private": true,
+  "private": false,
   "description": "Local-first capability intelligence for AI agent skills, plugins, tools, connectors, hooks, and workflow resources.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AyobamiH/capability-intelligence.git"
+  },
+  "homepage": "https://github.com/AyobamiH/capability-intelligence#readme",
+  "bugs": {
+    "url": "https://github.com/AyobamiH/capability-intelligence/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "ai-agents",
+    "capability-inventory",
+    "cli",
+    "local-first",
+    "security"
+  ],
   "type": "module",
   "bin": {
     "capability-intelligence": "bin/capability-intelligence.js",
@@ -12,20 +31,26 @@
     "check": "npm run lint && npm test && npm run scan:strict",
     "lint": "node scripts/check-js.js",
     "test": "node --test --test-concurrency=1 test/*.test.js",
+    "test:portable": "npm run lint && npm test",
     "scan": "node bin/capability-intelligence.js scan",
     "scan:json": "node bin/capability-intelligence.js scan --json",
     "scan:strict": "node bin/capability-intelligence.js scan --strict --summary",
     "receipts:test": "node --test test/receipts.test.js",
     "serve": "node bin/capability-intelligence.js serve",
     "coverage": "node bin/capability-intelligence.js coverage",
-    "audit:browser": "node test/browser-audit.mjs"
+    "audit:browser": "node test/browser-audit.mjs",
+    "prepack": "npm run test:portable"
   },
   "engines": {
     "node": ">=20"
   },
   "files": [
     "AGENTS.md",
+    "CHANGELOG.md",
+    "CONTRIBUTING.md",
+    "LICENSE",
     "README.md",
+    "SECURITY.md",
     "bin/",
     "docs/privacy.md",
     "docs/BACKLOG.md",

@@ -2,7 +2,7 @@
 
 ## Status
 
-This is an architectural direction, not a deployed service or current release commitment. The implemented product is a private local alpha with no configured remote, public licence, hosted control plane, accounts, billing, or organisation roles.
+This is an architectural direction, not a deployed service or current hosted-release commitment. The implemented product is an MIT-licensed, public-source local alpha with no hosted control plane, accounts, billing, or organisation roles.
 
 ## Local Plane
 

@@ -2,7 +2,7 @@
 
 ## Current Product
 
-Capability Intelligence remains a standalone, private, local-first alpha for a technical operator. It inventories capability metadata and evidence state. It does not execute capabilities, run autonomous coding workflows, or verify engineering outcomes.
+Capability Intelligence remains a standalone, public-source, local-first alpha for a technical operator. It inventories capability metadata and evidence state. It does not execute capabilities, run autonomous coding workflows, or verify engineering outcomes.
 
 ## Interface
 
@@ -32,7 +32,7 @@ Seven product-recon handoff/model drafts are retained as a dated historical snap
 
 ## Distribution And Licence
 
-The package remains `private: true`. No public repository, npm publication, binary distribution, or hosted launch is approved. There is no licence file, so public distribution remains blocked until ownership and licence terms are chosen deliberately.
+John selected the MIT License and the public repository identity `AyobamiH/capability-intelligence`. MIT permits use, modification, redistribution, sublicensing, and commercial use when the copyright and licence notice are retained, and supplies the software without warranty. The npm identity is `capability-intelligence@0.1.0`; source publication and registry publication must be verified independently. This decision does not approve a hosted launch or weaken runtime authority boundaries.
 
 ## Hosted Direction
 
@@ -44,4 +44,4 @@ The hosted architecture is deferred product research. No accounts, organisation 
 - Which cached plugin version, if any, can be proven active without reading private runtime state?
 - Should connector enabled flags remain lifecycle hints or move entirely to metadata?
 - Which non-Chromium browsers become supported if the product is distributed?
-- What ownership and licence model applies before any public release?
+- What operational support level is sustainable as public users exercise additional environments?

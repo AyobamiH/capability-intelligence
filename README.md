@@ -1,5 +1,8 @@
 # Capability Intelligence
 
+[![Validate](https://github.com/AyobamiH/capability-intelligence/actions/workflows/validate.yml/badge.svg)](https://github.com/AyobamiH/capability-intelligence/actions/workflows/validate.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
 Capability Intelligence answers three questions:
 
 1. What capabilities are present or discoverable?
@@ -7,6 +10,25 @@ Capability Intelligence answers three questions:
 3. What authority, dependencies, and risks would be involved in using them?
 
 It is a standalone, local-first product. It does not execute autonomous coding workflows and does not verify engineering claims like OpsTruth.
+
+## Distribution
+
+The source is released under the [MIT License](LICENSE) at `AyobamiH/capability-intelligence`. The npm package identity is `capability-intelligence`; verify registry availability before installing because source publication and npm publication are separate evidence.
+
+```bash
+npm view capability-intelligence version
+npm install --global capability-intelligence
+capability-intelligence coverage
+```
+
+For source development:
+
+```bash
+git clone https://github.com/AyobamiH/capability-intelligence.git
+cd capability-intelligence
+npm ci --ignore-scripts --no-audit --no-fund
+npm run test:portable
+```
 
 ## Current Sources
 
@@ -76,8 +98,11 @@ discovered -> present -> installed -> enabled -> authenticated -> runnable -> ve
 
 ```bash
 npm install --package-lock-only --ignore-scripts
+npm run test:portable
 npm run check
 ```
+
+`test:portable` is the deterministic public CI gate. `check` additionally validates a strict scan of the current operator's allowlisted local capability sources; CI cannot manufacture that private local source surface.
 
 See [docs/product-contract.md](docs/product-contract.md), [docs/source-coverage.md](docs/source-coverage.md), [docs/privacy.md](docs/privacy.md), [docs/product-decisions.md](docs/product-decisions.md), [docs/observed-receipts.md](docs/observed-receipts.md), [docs/BACKLOG.md](docs/BACKLOG.md), [docs/MATURITY.md](docs/MATURITY.md), and [docs/saas-architecture.md](docs/saas-architecture.md).
 

@@ -2,7 +2,7 @@
 
 ## Current Level
 
-Capability Intelligence is a private local-first alpha with a proven read-only inventory core, deterministic query surfaces, strict coverage accounting, bounded loopback inspection, and an explicit observed-receipt overlay. It is useful to one technical operator and has synthetic integration coverage. It is not a public package, hosted service, capability executor, or cryptographic attestation system.
+Capability Intelligence is an MIT-licensed, public-source, local-first alpha with a proven read-only inventory core, deterministic query surfaces, strict coverage accounting, bounded loopback inspection, and an explicit observed-receipt overlay. It is useful to one technical operator and has synthetic integration coverage. Public source availability does not make it a hosted service, capability executor, or cryptographic attestation system; npm publication remains a separately verified distribution event.
 
 ## Intended Role
 
@@ -34,7 +34,7 @@ It complements the autonomous coding workflow library. The workflow chooses and 
 - cached plugin versions do not identify the active runtime version;
 - dashboard browser proof is Chromium-specific;
 - the dated product-recon archive describes commit `d79bcc6` and must not be treated as current behavior;
-- no public licence, remote repository, hosted tenancy, telemetry import, or distribution support exists.
+- public distribution is new and operational support remains limited; no hosted tenancy, telemetry import, or managed service exists.
 
 ## Architectural Boundaries
 
@@ -48,7 +48,7 @@ It complements the autonomous coding workflow library. The workflow chooses and 
 
 ## Reliability And Verification
 
-Normal acceptance requires `npm run check`: recursive syntax validation, deterministic fixture tests, and a strict real local scan. Direct UI changes additionally require the bounded browser audit. Receipt work requires passed, failed, stale, unmatched, malformed, unsafe, and repeated-observation fixtures.
+Normal maintainer acceptance requires `npm run check`: recursive syntax validation, deterministic fixture tests, and a strict real local scan. Public CI uses `npm run test:portable` because a clean runner does not contain the operator's allowlisted local capability sources. Direct UI changes additionally require the bounded browser audit. Receipt work requires passed, failed, stale, unmatched, malformed, unsafe, and repeated-observation fixtures.
 
 Lifecycle truth is monotonic only within the evidence available to one report. A latest matching passed receipt yields `verified=yes`; a latest matching failed receipt yields `verified=no`; stale or unmatched receipts do not change lifecycle state. This means “verified in this report under this observation contract,” not “universally reliable.”
 
@@ -72,4 +72,4 @@ The core remains dependency-free Node.js with deterministic fixtures on supporte
 
 ## Longer-Term Direction
 
-Only evidence may promote signed receipts, additional browsers, public distribution, or a hosted import service. Capability acquisition, automatic installation, and autonomous invocation remain separate product concerns and should not be folded into this inventory layer merely to make it appear more autonomous.
+Only evidence may promote signed receipts, additional browsers, stronger distribution support, or a hosted import service. Capability acquisition, automatic installation, and autonomous invocation remain separate product concerns and should not be folded into this inventory layer merely to make it appear more autonomous.
