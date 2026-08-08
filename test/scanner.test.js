@@ -95,9 +95,12 @@ test("tool annotations drive risk without exposing tool payload schemas", (t) =>
 test("connector snapshots deduplicate by hidden identity", (t) => {
   const inventory = scanEnvironment({ home: fixtureHome(t), clock: CLOCK });
   const source = inventory.sources.find((candidate) => candidate.id === "codex-app-directory");
+  const connectors = inventory.artifacts.filter((artifact) => artifact.source === "codex-app-directory");
   assert.equal(source.records, 3);
   assert.equal(source.represented, 2);
   assert.equal(source.deduplicated, 1);
+  assert.ok(connectors.every((artifact) => artifact.lifecycle.enabled === "unknown"));
+  assert.deepEqual(connectors.map((artifact) => artifact.metadata.enabledHint).sort(), ["no", "yes"]);
   const output = JSON.stringify(inventory);
   assert.equal(output.includes("connector-private-one"), false);
   assert.equal(output.includes("install.example"), false);

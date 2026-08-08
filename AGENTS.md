@@ -24,6 +24,7 @@ Run:
 npm run check
 node bin/capability-intelligence.js coverage
 node bin/capability-intelligence.js ask "create a product video"
+node --test test/receipts.test.js
 ```
 
-Review coverage counts, unknown states, redaction findings, and source failures before claiming completion.
+Review coverage counts, unknown states, receipt overlay findings, redaction findings, and source failures before claiming completion.

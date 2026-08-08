@@ -1,0 +1,30 @@
+# Capability Intelligence Backlog
+
+This is the canonical product backlog. It records product work separately from the autonomous coding workflow library that may be used to implement or verify it.
+
+Status values follow the workflow corpus convention: `verified-complete`, `relevant-ready`, `relevant-blocked`, `relevant-needs-investigation`, and `intentionally-deferred`.
+
+| ID | Item | Origin and repository evidence | Status | Priority | Dependency / next condition | Acceptance and verification |
+| --- | --- | --- | --- | --- | --- | --- |
+| `CI-001` | Complete allowlisted local capability inventory | Hard-cutover commit `c6194d6`; scanner, source adapters, strict coverage, and synthetic fixtures | `verified-complete` | P0 | None | `npm run check` reconciles every source without unsafe output. |
+| `CI-002` | Require positive outcome relevance | Product self-use exposed readiness-ranked unrelated results; commit `248bf65` | `verified-complete` | P0 | None | Empty and unmatched searches return no results across CLI, API, and query tests. |
+| `CI-003` | Reject invalid CLI input before scanning | Reconnaissance exposed ignored options and unconstrained risk levels; commit `b25a805` | `verified-complete` | P0 | None | Unknown options, duplicates, and invalid risk levels fail closed. |
+| `CI-004` | Preserve unlabelled plugin purpose without overclaiming | 111 catalogue manifests lacked standard capability labels; commits `5ded92a` and `1de53d8` | `verified-complete` | P0 | None | Every manifest remains visible with safe metadata and unknown runtime state. |
+| `CI-005` | Mature bounded inspection surfaces | Commit `1de53d8`; paginated API, artifact detail, diagnostics, host diff, schema validation, and export overwrite guard | `verified-complete` | P0 | None | Focused API, CLI, schema, package-boundary, and responsive layout tests pass. |
+| `CI-006` | Keep connector directory flags out of lifecycle truth | Cached `isEnabled` and `isAccessible` are directory hints, not observed runtime proof | `verified-complete` | P0 | None | Connector lifecycle remains `unknown`; safe hint metadata remains available; regression test passes. |
+| `CI-007` | Import bounded observed-execution receipts | Product contract reserved `observed` evidence but had no validated path | `verified-complete` | P0 | None | Explicit local bundle validation, current-artifact fingerprint match, latest-observation semantics, privacy checks, CLI reporting, and fixture regressions pass. |
+| `CI-008` | Authenticate receipt issuers when multiple producers exist | The v1 receipt overlay trusts an explicit operator-supplied local file and does not prove issuer authenticity | `relevant-needs-investigation` | P1 | Evidence from at least two independent receipt producers | Select a signing or trust-store contract without introducing secret reads or pretending schema validation proves provenance. |
+| `CI-009` | Prove active plugin versions safely | Installed cache versions are structural evidence; active runtime selection remains unknown | `relevant-needs-investigation` | P1 | Safe runtime receipt or provider that does not read private configuration | A version-specific current-artifact receipt can be matched without reading credentials, sessions, or arbitrary config. |
+| `CI-010` | Resolve product-recon draft provenance | Seven pre-existing local handoff/model drafts are intentionally untracked and excluded from package contents | `relevant-blocked` | P1 | Owner decision to accept, revise, archive, or discard the drafts | Tracked scope is explicit, no user work is overwritten, and the Git tree no longer depends on ambiguous provenance. |
+| `CI-011` | Decide ownership, licence, and distribution | `private: true`; no licence or remote repository is configured | `relevant-blocked` | P2 | Product ownership and licence decision | Public packaging starts only after explicit terms, threat review, and repository decision. |
+| `CI-012` | Expand browser support | Current browser audit is Chromium-specific and distribution is not approved | `intentionally-deferred` | P2 | Distribution decision and supported-browser policy | Add browser-specific fixtures only when a real supported platform requires them. |
+| `CI-013` | Hosted control plane | SaaS architecture is research only; tenant, retention, legal, and threat contracts are absent | `intentionally-deferred` | P3 | Separate hosted-product objective | No remote crawl or silent upload; explicit redacted import and tenant isolation are proven first. |
+| `CI-014` | Capability acquisition broker or automatic invocation | The product is an intelligence layer, not an executor; current workflow evidence does not prove a generic broker is needed | `intentionally-deferred` | P3 | Repeated cross-project capability blockers that existing adapters cannot resolve | A separate product decision and consequence-authority model are required. |
+
+## Current Queue
+
+No P0 item remains open after `CI-006` and `CI-007`. The next evidence-backed investigation is `CI-008`, but it should not be implemented until more than one real receipt producer exists. `CI-010` is an owner decision and does not block local inventory or receipt validation.
+
+## Usage Evidence
+
+The autonomous coding workflow library exposed `CI-002`, `CI-003`, `CI-006`, and the need for this canonical backlog while using Capability Intelligence as a real target project. That consuming project may verify this product, but product requirements and maturity decisions remain canonical here.

@@ -1,6 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { parseCliArgs, validateCliOptions } from "./cli-options.js";
+import { applyObservedReceipts, loadReceiptBundle, renderReceiptReport } from "./receipts.js";
 import { scanEnvironment, redactedInventory } from "./scanner.js";
 import { hostDiff, inspectArtifact, searchArtifacts, unlabelledPluginReport } from "./query.js";
 import { renderInventory, renderSearch, renderSummary, renderUnlabelledPlugins } from "./render.js";
@@ -9,7 +10,7 @@ import { startServer } from "./server.js";
 const HELP = `Capability Intelligence
 
 Usage:
-  capability-intelligence scan [--json] [--summary] [--strict] [--home PATH]
+  capability-intelligence scan [--json] [--summary] [--strict] [--receipts PATH] [--home PATH]
   capability-intelligence coverage [--json] [--home PATH]
   capability-intelligence ask <outcome> [--json] [--home PATH]
   capability-intelligence inspect <artifact-id> [--json] [--home PATH]
@@ -17,6 +18,7 @@ Usage:
   capability-intelligence risks [--level critical|high|medium|low|unknown] [--json] [--home PATH]
   capability-intelligence duplicates [--json] [--home PATH]
   capability-intelligence unlabelled [--json] [--home PATH]
+  capability-intelligence receipts --input PATH [--json] [--home PATH]
   capability-intelligence diff --host HOST --host HOST [--json] [--home PATH]
   capability-intelligence export --output PATH [--redacted] [--force] [--home PATH]
   capability-intelligence serve [--port PORT] [--home PATH]
@@ -40,11 +42,25 @@ export async function runCli(argv, io = defaultIo()) {
     return new Promise(() => {});
   }
 
-  const inventory = scanEnvironment({ home });
+  let receiptBundle = null;
+  if (command === "receipts" || options.receipts) {
+    const input = command === "receipts" ? options.input : options.receipts;
+    if (!input) return fail(io, `${command === "receipts" ? "receipts" : "scan --receipts"} requires an input path.`);
+    try {
+      receiptBundle = loadReceiptBundle(input);
+    } catch (error) {
+      return fail(io, error.message, 3);
+    }
+  }
+
+  let inventory = scanEnvironment({ home });
+  let receiptReport = null;
+  if (receiptBundle) ({ inventory, report: receiptReport } = applyObservedReceipts(inventory, receiptBundle));
   switch (command) {
     case "scan":
       emit(io, options.json ? inventory : options.summary ? renderSummary(inventory) : renderInventory(inventory), options.json);
       if (options.strict && inventory.coverage.status !== "passed") return fail(io, "Strict coverage failed.");
+      if (options.strict && receiptReport && receiptReport.status !== "passed") return fail(io, "Strict receipt validation did not pass.", 2);
       return 0;
     case "coverage":
       emit(io, options.json ? inventory.coverage : renderCoverage(inventory), options.json);
@@ -86,6 +102,9 @@ export async function runCli(argv, io = defaultIo()) {
       emit(io, options.json ? report : renderUnlabelledPlugins(report), options.json);
       return 0;
     }
+    case "receipts":
+      emit(io, options.json ? receiptReport : renderReceiptReport(receiptReport), options.json);
+      return receiptReport.status === "passed" ? 0 : receiptReport.status === "warning" ? 2 : 1;
     case "diff": {
       const hosts = arrayOption(options.host);
       if (hosts.length !== 2) return fail(io, "diff requires exactly two --host values.");

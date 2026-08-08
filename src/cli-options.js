@@ -6,7 +6,7 @@ const HELP_FLAGS = new Set(["help"]);
 // reads any source metadata, and options from one command cannot leak into
 // another command merely because the parser knows their names.
 const COMMAND_OPTIONS = Object.freeze({
-  scan: optionSpec(["json", "summary", "strict"], ["home"]),
+  scan: optionSpec(["json", "summary", "strict"], ["home", "receipts"]),
   coverage: optionSpec(["json"], ["home"]),
   ask: optionSpec(["json"], ["home"]),
   inspect: optionSpec(["json"], ["home"]),
@@ -14,6 +14,7 @@ const COMMAND_OPTIONS = Object.freeze({
   risks: optionSpec(["json"], ["home", "level"]),
   duplicates: optionSpec(["json"], ["home"]),
   unlabelled: optionSpec(["json"], ["home"]),
+  receipts: optionSpec(["json"], ["home", "input"]),
   diff: optionSpec(["json"], ["home", "host"], ["host"]),
   export: optionSpec(["redacted", "force"], ["home", "output"]),
   serve: optionSpec([], ["home", "port"]),

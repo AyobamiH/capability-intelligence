@@ -88,6 +88,8 @@ This is a later environment snapshot, not a replacement for the dated hard-cutov
 
 The OpenClaw adapter reads only `openclaw.plugin.json` files in three allowlisted layouts. It does not read `openclaw.json`, agent databases, channel credentials, sessions, auth stores, logs, or request payloads. `enabledByDefault` and startup declarations are retained as manifest metadata; lifecycle enablement and authentication remain `unknown` until a separate safe runtime-evidence contract exists.
 
+Connector directory `isEnabled` and `isAccessible` values are likewise retained as `enabledHint` and `accessibleHint` metadata only. Directory cache state does not prove current runtime lifecycle state.
+
 ## Coverage Failure
 
 Strict mode fails when:

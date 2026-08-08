@@ -38,6 +38,8 @@ node bin/capability-intelligence.js risks --level high
 node bin/capability-intelligence.js duplicates
 node bin/capability-intelligence.js unlabelled
 node bin/capability-intelligence.js unlabelled --json
+node bin/capability-intelligence.js receipts --input /path/to/receipts.json
+node bin/capability-intelligence.js scan --receipts /path/to/receipts.json --json
 node bin/capability-intelligence.js diff --host codex --host claude
 node bin/capability-intelligence.js export --output /tmp/capabilities.json --redacted
 node bin/capability-intelligence.js export --output /tmp/capabilities.json --redacted --force
@@ -49,6 +51,10 @@ Outcome search returns only artifacts with a positive lexical or concept match. 
 CLI options are command-specific. Unknown options and repeated singleton options fail instead of being ignored. `risks --level` accepts only `critical`, `high`, `medium`, `low`, or `unknown`.
 
 `unlabelled` makes plugin-manifest metadata gaps inspectable. It lists every catalogue plugin without the standard capability field together with its safe description, manifest category, broad inferred labels, declared integration-surface counts, risk, and lifecycle. Inferred purpose remains inferred, and every unobserved runtime state remains unknown.
+
+Connector directory flags are retained only as metadata hints. They do not set installed, enabled, authenticated, runnable, or verified lifecycle state.
+
+Observed receipts are an explicit local overlay. A bounded v1 receipt must match the current artifact fingerprint and required observation checks before it can affect the report. Receipt import does not invoke capabilities or mutate their sources, and the v1 operator-trust boundary is not a cryptographic issuer attestation.
 
 The loopback dashboard uses the same outcome-matching contract as the CLI. Inventory requests are paginated with an exact total and a default page size of 50. Evidence detail includes structural relationships, while diagnostics and host comparison remain read-only views.
 
@@ -73,4 +79,6 @@ npm install --package-lock-only --ignore-scripts
 npm run check
 ```
 
-See [docs/product-contract.md](docs/product-contract.md), [docs/source-coverage.md](docs/source-coverage.md), [docs/privacy.md](docs/privacy.md), [docs/product-decisions.md](docs/product-decisions.md), and [docs/saas-architecture.md](docs/saas-architecture.md).
+See [docs/product-contract.md](docs/product-contract.md), [docs/source-coverage.md](docs/source-coverage.md), [docs/privacy.md](docs/privacy.md), [docs/product-decisions.md](docs/product-decisions.md), [docs/observed-receipts.md](docs/observed-receipts.md), [docs/BACKLOG.md](docs/BACKLOG.md), [docs/MATURITY.md](docs/MATURITY.md), and [docs/saas-architecture.md](docs/saas-architecture.md).
+
+Bounded product reconnaissance is indexed in [docs/product-recon/README.md](docs/product-recon/README.md), including the [unlabelled plugin manifest audit](docs/product-recon/UNLABELLED_PLUGIN_MANIFEST_AUDIT.md). Local handoff drafts outside that index remain untracked and excluded from package contents until their provenance is resolved.

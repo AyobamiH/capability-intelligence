@@ -33,6 +33,9 @@ It consumes metadata from those systems and explains what a specific environment
 15. Inventory browsing and outcome search share one deterministic query implementation, but an empty outcome search remains a no-match rather than an unfiltered inventory.
 16. Loopback inventory responses are bounded to 200 artifacts per request and default to 50.
 17. Export never overwrites an existing path unless `--force` is explicit.
+18. Cached connector enabled and accessible flags remain metadata hints and never prove lifecycle enablement or runnability.
+19. Observed receipts are accepted only from an explicit bounded file, must match the current artifact fingerprint, and never invoke or mutate a capability.
+20. A v1 receipt import is an operator trust boundary, not cryptographic issuer authentication.
 
 ## Artifact Types
 
@@ -66,6 +69,8 @@ Capability statements carry one of:
 - `unknown`: insufficient evidence.
 
 Only observed evidence may move a capability to `verified=yes`.
+
+For `capability-observation.v1`, observed evidence means the latest explicit receipt for the current artifact passed the required identity, invocation, expected-outcome, and no-secret-output checks. A latest matching failed receipt yields `verified=no`; unmatched or stale receipts leave lifecycle state unchanged.
 
 ## Hard Cutover Acceptance
 

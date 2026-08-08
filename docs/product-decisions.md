@@ -14,7 +14,9 @@ CLI, API, and dashboard outcome matching use the same deterministic implementati
 
 ## Evidence And Risk
 
-`verified: yes` requires a future validated observed receipt. Until that contract exists, structural or declared metadata cannot become verified execution evidence. Risk remains a metadata-derived heuristic; every displayed level must retain its reasons and source context.
+`verified: yes` requires an explicitly imported, validated `capability-observation.v1` receipt that matches the current artifact fingerprint. Structural or declared metadata cannot become verified execution evidence. V1 uses an operator trust boundary and does not authenticate issuers cryptographically. Risk remains a metadata-derived heuristic; every displayed level must retain its reasons and source context.
+
+Cached connector `isEnabled` and `isAccessible` values remain metadata hints. They do not prove installed, enabled, runnable, authenticated, or verified lifecycle state.
 
 ## OpenClaw Integration
 
@@ -34,7 +36,7 @@ The hosted architecture is deferred product research. No accounts, organisation 
 
 ## Remaining Product Questions
 
-- What receipt format can safely support observed verification?
+- When multiple independent receipt producers exist, what issuer-authentication mechanism is proportionate?
 - Which cached plugin version, if any, can be proven active without reading private runtime state?
 - Should connector enabled flags remain lifecycle hints or move entirely to metadata?
 - Which non-Chromium browsers become supported if the product is distributed?

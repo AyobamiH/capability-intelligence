@@ -18,6 +18,8 @@ Redaction is data minimisation, not anonymity and not approval for public distri
 
 A future hosted control plane may receive only an explicitly generated redacted export. It must not remotely crawl a workstation and must not require uploading skill bodies, scripts, prompts, sessions, or credentials.
 
+Observed receipts are explicit local inputs, not a newly scanned source. The v1 contract rejects arbitrary fields and secret-shaped values, limits file and record counts, emits no input path, and never copies or rewrites the receipt file. Receipts must not contain command output, prompts, source content, credentials, headers, tokens, or free-form notes.
+
 No hosted import is implemented or approved. Before one exists, it requires a threat model, a reviewed import schema, retention and deletion rules, tenant isolation, and sample-export review.
 
 ## Unsafe Source Handling

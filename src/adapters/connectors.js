@@ -65,10 +65,10 @@ export function scanConnectors(config) {
       lifecycle: {
         discovered: "yes",
         present: "yes",
-        installed: connector.isEnabled === true ? "unknown" : "unknown",
-        enabled: connector.isEnabled === true ? "yes" : connector.isEnabled === false ? "no" : "unknown",
+        installed: "unknown",
+        enabled: "unknown",
         authenticated: "unknown",
-        runnable: connector.isAccessible === true ? "unknown" : "unknown",
+        runnable: "unknown",
         verified: "unknown",
       },
       risk: { level: "unknown", reasons: ["connector tool authority is not available in directory metadata"] },

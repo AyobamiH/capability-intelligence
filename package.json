@@ -15,6 +15,7 @@
     "scan": "node bin/capability-intelligence.js scan",
     "scan:json": "node bin/capability-intelligence.js scan --json",
     "scan:strict": "node bin/capability-intelligence.js scan --strict --summary",
+    "receipts:test": "node --test test/receipts.test.js",
     "serve": "node bin/capability-intelligence.js serve",
     "coverage": "node bin/capability-intelligence.js coverage",
     "audit:browser": "node test/browser-audit.mjs"
@@ -27,6 +28,9 @@
     "README.md",
     "bin/",
     "docs/privacy.md",
+    "docs/BACKLOG.md",
+    "docs/MATURITY.md",
+    "docs/observed-receipts.md",
     "docs/product-contract.md",
     "docs/product-decisions.md",
     "docs/product-recon/README.md",
