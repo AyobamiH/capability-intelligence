@@ -8,10 +8,4 @@ dist/
 *.tgz
 /inventory*.json
 screenshots/
-docs/product-recon/COPYWRITER_HANDOFF.md
-docs/product-recon/EVIDENCE_INDEX.md
-docs/product-recon/LOVABLE_BUILD_CONTEXT.md
-docs/product-recon/OPEN_QUESTIONS.md
-docs/product-recon/PRODUCT_DOSSIER.md
-docs/product-recon/UX_UI_HANDOFF.md
-docs/product-recon/product-model.json
+docs/product-recon/archive/

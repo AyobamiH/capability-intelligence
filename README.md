@@ -81,4 +81,4 @@ npm run check
 
 See [docs/product-contract.md](docs/product-contract.md), [docs/source-coverage.md](docs/source-coverage.md), [docs/privacy.md](docs/privacy.md), [docs/product-decisions.md](docs/product-decisions.md), [docs/observed-receipts.md](docs/observed-receipts.md), [docs/BACKLOG.md](docs/BACKLOG.md), [docs/MATURITY.md](docs/MATURITY.md), and [docs/saas-architecture.md](docs/saas-architecture.md).
 
-Bounded product reconnaissance is indexed in [docs/product-recon/README.md](docs/product-recon/README.md), including the [unlabelled plugin manifest audit](docs/product-recon/UNLABELLED_PLUGIN_MANIFEST_AUDIT.md). Local handoff drafts outside that index remain untracked and excluded from package contents until their provenance is resolved.
+Bounded product reconnaissance is indexed in [docs/product-recon/README.md](docs/product-recon/README.md), including the [unlabelled plugin manifest audit](docs/product-recon/UNLABELLED_PLUGIN_MANIFEST_AUDIT.md). The seven pre-contract handoff/model drafts are retained in a dated, package-excluded historical archive with a per-file disposition; they are not current product authority.

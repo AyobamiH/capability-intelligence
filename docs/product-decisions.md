@@ -26,6 +26,10 @@ The product reads allowlisted OpenClaw plugin manifests as a native local source
 
 Redacted export is intended for reduced-data, team-local evidence. It is not described as anonymous or safe to publish. Existing files are protected unless `--force` is explicit.
 
+## Reconnaissance Provenance
+
+Seven product-recon handoff/model drafts are retained as a dated historical snapshot of commit `d79bcc6`. None is current product authority because later commits resolved material search, CLI, API, schema, export, dashboard, and receipt findings. The archive remains outside package contents; canonical contracts and live CLI evidence govern current work.
+
 ## Distribution And Licence
 
 The package remains `private: true`. No public repository, npm publication, binary distribution, or hosted launch is approved. There is no licence file, so public distribution remains blocked until ownership and licence terms are chosen deliberately.

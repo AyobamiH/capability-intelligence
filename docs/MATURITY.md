@@ -33,7 +33,7 @@ It complements the autonomous coding workflow library. The workflow chooses and 
 - enabled, authenticated, runnable, and verified states remain unknown unless evidence supports them;
 - cached plugin versions do not identify the active runtime version;
 - dashboard browser proof is Chromium-specific;
-- local product-recon drafts have unresolved provenance and remain untracked;
+- the dated product-recon archive describes commit `d79bcc6` and must not be treated as current behavior;
 - no public licence, remote repository, hosted tenancy, telemetry import, or distribution support exists.
 
 ## Architectural Boundaries
@@ -67,8 +67,8 @@ The core remains dependency-free Node.js with deterministic fixtures on supporte
 ## Near-Term Direction
 
 1. Use the v1 receipt contract with a second independent local producer before designing issuer authentication.
-2. Resolve provenance for the existing untracked product-recon drafts.
-3. Keep source coverage and lifecycle semantics under regression as local catalogues evolve.
+2. Keep source coverage and lifecycle semantics under regression as local catalogues evolve.
+3. Extract a still-valid archived constraint only when current implementation evidence confirms it.
 
 ## Longer-Term Direction
 

@@ -15,7 +15,7 @@ Status values follow the workflow corpus convention: `verified-complete`, `relev
 | `CI-007` | Import bounded observed-execution receipts | Product contract reserved `observed` evidence but had no validated path | `verified-complete` | P0 | None | Explicit local bundle validation, current-artifact fingerprint match, latest-observation semantics, privacy checks, CLI reporting, and fixture regressions pass. |
 | `CI-008` | Authenticate receipt issuers when multiple producers exist | The v1 receipt overlay trusts an explicit operator-supplied local file and does not prove issuer authenticity | `relevant-needs-investigation` | P1 | Evidence from at least two independent receipt producers | Select a signing or trust-store contract without introducing secret reads or pretending schema validation proves provenance. |
 | `CI-009` | Prove active plugin versions safely | Installed cache versions are structural evidence; active runtime selection remains unknown | `relevant-needs-investigation` | P1 | Safe runtime receipt or provider that does not read private configuration | A version-specific current-artifact receipt can be matched without reading credentials, sessions, or arbitrary config. |
-| `CI-010` | Resolve product-recon draft provenance | Seven pre-existing local handoff/model drafts are intentionally untracked and excluded from package contents | `relevant-blocked` | P1 | Owner decision to accept, revise, archive, or discard the drafts | Tracked scope is explicit, no user work is overwritten, and the Git tree no longer depends on ambiguous provenance. |
+| `CI-010` | Resolve product-recon draft provenance | Seven drafts were generated against `d79bcc6`; later commits resolve material current-state claims | `verified-complete` | P1 | None | Every file is preserved in the dated historical archive with a specific reason, canonical authority is explicit, privacy scan passes, and package contents exclude the archive. |
 | `CI-011` | Decide ownership, licence, and distribution | `private: true`; no licence or remote repository is configured | `relevant-blocked` | P2 | Product ownership and licence decision | Public packaging starts only after explicit terms, threat review, and repository decision. |
 | `CI-012` | Expand browser support | Current browser audit is Chromium-specific and distribution is not approved | `intentionally-deferred` | P2 | Distribution decision and supported-browser policy | Add browser-specific fixtures only when a real supported platform requires them. |
 | `CI-013` | Hosted control plane | SaaS architecture is research only; tenant, retention, legal, and threat contracts are absent | `intentionally-deferred` | P3 | Separate hosted-product objective | No remote crawl or silent upload; explicit redacted import and tenant isolation are proven first. |
@@ -23,7 +23,7 @@ Status values follow the workflow corpus convention: `verified-complete`, `relev
 
 ## Current Queue
 
-No P0 item remains open after `CI-006` and `CI-007`. The next evidence-backed investigation is `CI-008`, but it should not be implemented until more than one real receipt producer exists. `CI-010` is an owner decision and does not block local inventory or receipt validation.
+No P0 item remains open after `CI-006` and `CI-007`. `CI-010` is resolved by the evidence-backed historical archive. The next evidence-backed investigation is `CI-008`, but it should not be implemented until more than one real receipt producer exists.
 
 ## Usage Evidence
 

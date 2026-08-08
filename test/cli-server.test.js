@@ -128,6 +128,26 @@ test("package documentation allowlist excludes local reconnaissance drafts", () 
   assert.equal(packageJson.files.some((entry) => /HANDOFF|DOSSIER|OPEN_QUESTIONS|product-model/.test(entry)), false);
 });
 
+test("historical reconnaissance has explicit per-file decisions and stays outside the package", () => {
+  const archiveRoot = new URL("../docs/product-recon/archive/2026-07-16-d79bcc6/", import.meta.url);
+  const decisionRecord = fs.readFileSync(new URL("README.md", archiveRoot), "utf8");
+  const expected = [
+    "COPYWRITER_HANDOFF.md",
+    "EVIDENCE_INDEX.md",
+    "LOVABLE_BUILD_CONTEXT.md",
+    "OPEN_QUESTIONS.md",
+    "PRODUCT_DOSSIER.md",
+    "UX_UI_HANDOFF.md",
+    "product-model.json",
+  ];
+  for (const file of expected) {
+    assert.ok(fs.existsSync(new URL(file, archiveRoot)), `${file} should be preserved in the archive`);
+    assert.ok(decisionRecord.includes(`| \`${file}\` | Archive |`), `${file} should have an archive decision`);
+  }
+  const npmignore = fs.readFileSync(new URL("../.npmignore", import.meta.url), "utf8");
+  assert.match(npmignore, /^docs\/product-recon\/archive\/$/m);
+});
+
 function captureIo() {
   const stdout = [];
   const stderr = [];

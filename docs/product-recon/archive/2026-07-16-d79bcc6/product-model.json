@@ -1,0 +1,459 @@
+{
+  "schemaVersion": "1.0",
+  "reconnaissance": {
+    "collectedAt": "2026-07-16",
+    "repositoryCommit": "d79bcc6",
+    "scope": "capability-intelligence repository only",
+    "developmentChatInspected": false
+  },
+  "product": {
+    "name": "Capability Intelligence",
+    "summary": "A standalone, local-first inventory that explains which agent-related capabilities are discoverable and what is known about their readiness, evidence, and risk.",
+    "category": "local developer tool and capability inventory",
+    "maturity": "early local alpha",
+    "maturityClassification": "inferred",
+    "commercialModel": null,
+    "openSourceStatus": null,
+    "confirmedValueProposition": [
+      "Normalises fragmented local capability metadata into one deterministic inventory.",
+      "Keeps discovered, present, installed, enabled, authenticated, runnable, and verified separate.",
+      "Reports source accounting, evidence basis, metadata-derived risk, duplicates, and host differences."
+    ],
+    "outOfScope": [
+      "capability execution",
+      "plugin installation or enablement",
+      "connector authentication",
+      "autonomous coding workflow execution",
+      "engineering-claim verification",
+      "accounts and team administration",
+      "billing and subscriptions"
+    ]
+  },
+  "users": [
+    {
+      "id": "local-technical-operator",
+      "classification": "inferred",
+      "objective": "Understand what capabilities exist and what readiness evidence is actually available.",
+      "knowledge": "Technical; comfortable with terminals, plugins, tools, and local metadata.",
+      "deviceContext": "Desktop workstation primary; mobile inspection supported but not established as primary.",
+      "success": "Relevant resources can be found without unknown states being converted into working or verified claims."
+    },
+    {
+      "id": "capability-maintainer",
+      "classification": "inferred",
+      "objective": "Detect source gaps, duplicate skills, host drift, and unsafe or incomplete metadata.",
+      "knowledge": "Advanced technical maintainer.",
+      "deviceContext": "Terminal and desktop dashboard.",
+      "success": "Every discovered record is accounted for and metadata limitations are visible."
+    },
+    {
+      "id": "future-team-catalogue-user",
+      "classification": "planned",
+      "objective": "Review private team catalogues, approved sets, and drift.",
+      "knowledge": null,
+      "deviceContext": null,
+      "success": null
+    }
+  ],
+  "jobsToBeDone": [
+    {
+      "priority": "primary",
+      "classification": "confirmed",
+      "statement": "When capability resources are distributed across an agent environment, the user wants one inventory so they can see what is discoverable without assuming it works."
+    },
+    {
+      "priority": "primary",
+      "classification": "confirmed",
+      "statement": "When the user has an intended outcome, they want to find plausible resources and inspect readiness and risk so they can choose deliberately."
+    },
+    {
+      "priority": "primary",
+      "classification": "confirmed",
+      "statement": "When a scan completes, the user wants source reconciliation so they can distinguish inventory completeness from operational verification."
+    },
+    {
+      "priority": "secondary",
+      "classification": "confirmed",
+      "statement": "When hosts and skill roots overlap, the user wants duplicates and differences so they can identify drift."
+    },
+    {
+      "priority": "secondary",
+      "classification": "confirmed",
+      "statement": "When inventory must be shared, the user wants a redacted export so selected private metadata is withheld."
+    }
+  ],
+  "roles": [
+    {
+      "id": "local-os-user",
+      "classification": "confirmed",
+      "applicationRole": false,
+      "description": "The operating-system user is the effective actor because the product has no identity or role model."
+    }
+  ],
+  "permissions": [
+    {
+      "action": "scan allowlisted metadata",
+      "authority": "local filesystem read permission",
+      "classification": "confirmed"
+    },
+    {
+      "action": "write export",
+      "authority": "local filesystem write permission at the chosen path",
+      "classification": "confirmed"
+    },
+    {
+      "action": "access dashboard",
+      "authority": "local loopback access",
+      "classification": "confirmed"
+    }
+  ],
+  "entities": [
+    {
+      "id": "inventory",
+      "classification": "confirmed",
+      "fields": ["schemaVersion", "generatedAt", "mode", "summary", "sources", "artifacts", "graph", "findings", "coverage"],
+      "persistence": "in memory; optional JSON export"
+    },
+    {
+      "id": "source",
+      "classification": "confirmed",
+      "fields": ["id", "status", "records", "represented", "deduplicated", "parseFailures", "metadata"]
+    },
+    {
+      "id": "artifact",
+      "classification": "confirmed",
+      "fields": ["id", "type", "name", "description", "source", "hosts", "capabilities", "classificationEvidence", "lifecycle", "risk", "metadata"]
+    },
+    {
+      "id": "lifecycle",
+      "classification": "confirmed",
+      "fields": ["discovered", "present", "installed", "enabled", "authenticated", "runnable", "verified"],
+      "knownValues": ["yes", "no", "unknown", "not_applicable"]
+    },
+    {
+      "id": "risk",
+      "classification": "confirmed",
+      "fields": ["level", "reasons"],
+      "levels": ["critical", "high", "medium", "low", "unknown"]
+    },
+    {
+      "id": "coverage",
+      "classification": "confirmed",
+      "fields": ["status", "failures", "unlabelledManifests", "sourceCount", "artifactCount"]
+    },
+    {
+      "id": "finding",
+      "classification": "confirmed",
+      "fields": ["level", "code", "source", "message"]
+    },
+    {
+      "id": "graph",
+      "classification": "confirmed",
+      "fields": ["edges", "duplicates"]
+    }
+  ],
+  "features": [
+    {
+      "id": "environment-scan",
+      "status": "working",
+      "classification": "confirmed",
+      "entryPoints": ["scan"],
+      "limitations": ["metadata only", "no runtime proof"]
+    },
+    {
+      "id": "strict-coverage",
+      "status": "working",
+      "classification": "confirmed",
+      "entryPoints": ["scan --strict", "coverage", "doctor", "/api/coverage"],
+      "limitations": ["nested JSON schema is permissive"]
+    },
+    {
+      "id": "outcome-search",
+      "status": "working_with_limitations",
+      "classification": "confirmed",
+      "entryPoints": ["ask", "/api/search", "dashboard search"],
+      "limitations": ["CLI/API return readiness-ranked results without lexical matches", "dashboard uses a different algorithm"]
+    },
+    {
+      "id": "artifact-inspection",
+      "status": "working_with_limitations",
+      "classification": "confirmed",
+      "entryPoints": ["inspect", "dashboard row"],
+      "limitations": ["dashboard omits graph relationships and metadata"]
+    },
+    {
+      "id": "risk-review",
+      "status": "working_with_limitations",
+      "classification": "confirmed",
+      "entryPoints": ["risks", "dashboard risk filter"],
+      "limitations": ["risk is metadata-derived", "CLI level is unvalidated"]
+    },
+    {
+      "id": "duplicate-skills",
+      "status": "working",
+      "classification": "confirmed",
+      "entryPoints": ["duplicates"],
+      "limitations": ["name-based only"]
+    },
+    {
+      "id": "host-difference",
+      "status": "working_with_limitations",
+      "classification": "confirmed",
+      "entryPoints": ["diff --host"],
+      "limitations": ["name/type presence only", "host values unvalidated"]
+    },
+    {
+      "id": "redacted-export",
+      "status": "working_with_limitations",
+      "classification": "confirmed",
+      "entryPoints": ["export --redacted"],
+      "limitations": ["overwrites output path", "not proven anonymous or safe for public release"]
+    },
+    {
+      "id": "local-dashboard",
+      "status": "working_with_limitations",
+      "classification": "confirmed",
+      "entryPoints": ["serve", "/"],
+      "limitations": ["6.5 MB observed payload", "500-row cap", "mobile detail placement"]
+    },
+    {
+      "id": "hosted-control-plane",
+      "status": "planned",
+      "classification": "planned",
+      "entryPoints": [],
+      "limitations": ["no code, API, data model, roles, or deployment"]
+    }
+  ],
+  "workflows": [
+    {
+      "id": "scan-assess",
+      "classification": "confirmed",
+      "steps": ["run scan", "normalise sources", "evaluate coverage", "review summary or JSON"]
+    },
+    {
+      "id": "find-inspect",
+      "classification": "confirmed",
+      "steps": ["enter outcome", "review results", "select artifact", "read lifecycle/evidence/risk"]
+    },
+    {
+      "id": "diagnose-coverage",
+      "classification": "confirmed",
+      "steps": ["run coverage or doctor", "review source accounting", "repair source externally", "rescan"]
+    },
+    {
+      "id": "export-redacted",
+      "classification": "confirmed",
+      "steps": ["choose output path", "scan", "redact", "safety-check", "write JSON"]
+    },
+    {
+      "id": "browse-dashboard",
+      "classification": "confirmed",
+      "steps": ["start loopback server", "load inventory", "filter", "select row", "review detail and sources"]
+    }
+  ],
+  "routes": [
+    {
+      "path": "/",
+      "method": "GET",
+      "kind": "screen",
+      "status": "working_with_limitations",
+      "purpose": "Capability inventory dashboard"
+    },
+    {
+      "path": "/health",
+      "method": "GET",
+      "kind": "api",
+      "status": "working",
+      "purpose": "Process and coverage health"
+    },
+    {
+      "path": "/api/inventory",
+      "method": "GET",
+      "kind": "api",
+      "status": "working",
+      "purpose": "Full startup inventory"
+    },
+    {
+      "path": "/api/coverage",
+      "method": "GET",
+      "kind": "api",
+      "status": "working",
+      "purpose": "Coverage result"
+    },
+    {
+      "path": "/api/search?q=",
+      "method": "GET",
+      "kind": "api",
+      "status": "working_with_limitations",
+      "purpose": "Scored outcome search"
+    }
+  ],
+  "screens": [
+    {
+      "id": "capability-inventory-dashboard",
+      "route": "/",
+      "classification": "confirmed",
+      "primaryTask": "Filter and inspect capability artifacts.",
+      "regions": ["coverage header", "filters", "metrics", "inventory table", "evidence detail", "source ledger"],
+      "states": ["loading", "success", "coverage failed", "filtered empty", "partial 500-row display", "selected", "inventory unavailable"]
+    }
+  ],
+  "businessRules": [
+    {
+      "id": "allowlisted-sources-only",
+      "classification": "confirmed",
+      "rule": "The scanner reads only constructed, allowlisted metadata roots."
+    },
+    {
+      "id": "lifecycle-separation",
+      "classification": "confirmed",
+      "rule": "Earlier lifecycle states never imply later states."
+    },
+    {
+      "id": "strict-accounting",
+      "classification": "confirmed",
+      "rule": "Available source records must be accounted for as represented, deduplicated, or parse failures."
+    },
+    {
+      "id": "unlabelled-retention",
+      "classification": "confirmed",
+      "rule": "Plugin manifests without standard capability labels remain visible and counted."
+    },
+    {
+      "id": "unsafe-output-fails",
+      "classification": "confirmed",
+      "rule": "Forbidden fields and unsafe value patterns fail coverage."
+    },
+    {
+      "id": "loopback-get-only",
+      "classification": "confirmed",
+      "rule": "The HTTP service binds to loopback and accepts GET only."
+    },
+    {
+      "id": "dashboard-display-cap",
+      "classification": "confirmed",
+      "rule": "The dashboard displays at most 500 filtered artifacts."
+    }
+  ],
+  "states": [
+    { "id": "inventory-loading", "classification": "confirmed", "handling": "Scanning inventory" },
+    { "id": "inventory-success", "classification": "confirmed", "handling": "metrics, table, detail and sources" },
+    { "id": "inventory-error", "classification": "confirmed", "handling": "Inventory unavailable" },
+    { "id": "filtered-empty", "classification": "confirmed", "handling": "0 shown and empty table; no guidance" },
+    { "id": "coverage-failed", "classification": "confirmed", "handling": "Review required styling and failure data" },
+    { "id": "source-absent", "classification": "confirmed", "handling": "raw source status" },
+    { "id": "source-failed", "classification": "confirmed", "handling": "raw source status and coverage failure" },
+    { "id": "unauthorized", "classification": "confirmed_absent", "handling": null },
+    { "id": "forbidden", "classification": "confirmed_absent", "handling": null },
+    { "id": "queued", "classification": "confirmed_absent", "handling": null }
+  ],
+  "integrations": [
+    { "id": "codex-plugin-catalogue", "classification": "confirmed", "mode": "local metadata read" },
+    { "id": "codex-installed-plugin-cache", "classification": "confirmed", "mode": "local metadata read" },
+    { "id": "codex-user-skills", "classification": "confirmed", "mode": "local file read" },
+    { "id": "shared-agent-skills", "classification": "confirmed", "mode": "local file read" },
+    { "id": "claude-skills", "classification": "confirmed", "mode": "local file read" },
+    { "id": "codex-app-tools", "classification": "confirmed", "mode": "local cache read" },
+    { "id": "codex-app-directory", "classification": "confirmed", "mode": "local cache read" },
+    { "id": "coding-workflow-library", "classification": "confirmed", "mode": "local resource metadata read" },
+    { "id": "skills-sh", "classification": "planned", "mode": null },
+    { "id": "agent-package-manager", "classification": "planned", "mode": null },
+    { "id": "official-mcp-registry", "classification": "planned", "mode": null }
+  ],
+  "terminology": [
+    { "term": "inventory coverage", "classification": "recommended", "definition": "Completeness of source-record accounting; not capability verification." },
+    { "term": "artifact", "classification": "established", "definition": "One normalized capability-related record." },
+    { "term": "evidence", "classification": "established", "definition": "Declared, structural, inferred, observed, or unknown basis for a capability classification." },
+    { "term": "unknown", "classification": "established", "definition": "Insufficient evidence; neither success nor failure." },
+    { "term": "redacted export", "classification": "established", "definition": "Inventory with selected private descriptions and path metadata removed; not guaranteed anonymous." }
+  ],
+  "copyRequirements": [
+    {
+      "classification": "confirmed",
+      "requirement": "Qualify coverage as source or inventory coverage."
+    },
+    {
+      "classification": "confirmed",
+      "requirement": "Never equate installed, enabled, authenticated, runnable, and verified."
+    },
+    {
+      "classification": "confirmed",
+      "requirement": "Describe risk as metadata-derived and redaction as limited."
+    },
+    {
+      "classification": "confirmed",
+      "requirement": "Do not invent hosted, account, billing, execution, or reliability claims."
+    }
+  ],
+  "designConstraints": [
+    { "classification": "confirmed", "constraint": "Current visual system is dark, compact, technical, border-led, and framework-free." },
+    { "classification": "confirmed", "constraint": "Mobile must not create document-level horizontal overflow." },
+    { "classification": "confirmed", "constraint": "Use text in addition to semantic risk colours." },
+    { "classification": "owner_requirement", "constraint": "No neon, cyberpunk, glow, generic AI imagery, purple-blue templates, excessive glassmorphism, random bento layouts, or decorative novelty." }
+  ],
+  "technicalConstraints": [
+    { "classification": "confirmed", "constraint": "Node.js >=20 with no runtime dependencies." },
+    { "classification": "confirmed", "constraint": "Static HTML/CSS/JS frontend with no build step." },
+    { "classification": "confirmed", "constraint": "Read-only loopback JSON API and no database." },
+    { "classification": "confirmed", "constraint": "Observed full inventory payload is approximately 6.5 MB." },
+    { "classification": "confirmed", "constraint": "Server inventory refresh requires process restart." },
+    { "classification": "confirmed", "constraint": "Default scan must not make network requests or inspect excluded private state." }
+  ],
+  "unknowns": [
+    { "id": "primary-user", "priority": 2, "question": "Who is the primary first user?" },
+    { "id": "commercial-status", "priority": 3, "question": "Is the product private, open source, commercial, or mixed?" },
+    { "id": "verified-receipt", "priority": 1, "question": "What exact evidence permits verified yes?" },
+    { "id": "search-contract", "priority": 1, "question": "What should outcome search return when no term matches?" },
+    { "id": "dashboard-scope", "priority": 2, "question": "Should CLI-only workflows become dashboard views?" },
+    { "id": "mobile-priority", "priority": 4, "question": "Is mobile a primary operating context?" },
+    { "id": "redacted-sharing", "priority": 1, "question": "Who may safely receive a redacted export?" },
+    { "id": "brand-assets", "priority": 4, "question": "Are there approved logo or brand assets?" }
+  ],
+  "contradictions": [
+    {
+      "id": "artifact-type-list",
+      "classification": "conflicting",
+      "sourceA": "docs/product-contract.md lists 12 artifact types",
+      "sourceB": "runtime inventory contains 18 artifact types"
+    },
+    {
+      "id": "search-no-match",
+      "classification": "conflicting",
+      "sourceA": "renderer has no-match copy",
+      "sourceB": "readiness scoring returns results without term matches"
+    },
+    {
+      "id": "search-semantics",
+      "classification": "conflicting",
+      "sourceA": "dashboard uses AND substring filtering",
+      "sourceB": "CLI/API use concept and readiness scoring"
+    },
+    {
+      "id": "coverage-wording",
+      "classification": "conflicting",
+      "sourceA": "dashboard says Complete coverage",
+      "sourceB": "all observed artifacts remain verified unknown"
+    },
+    {
+      "id": "structural-metadata-copy",
+      "classification": "conflicting",
+      "sourceA": "detail helper promises structural metadata",
+      "sourceB": "dashboard detail does not render artifact metadata"
+    }
+  ],
+  "evidence": [
+    { "id": "positioning", "path": "README.md", "classification": "confirmed" },
+    { "id": "agent-contract", "path": "AGENTS.md", "classification": "confirmed" },
+    { "id": "truth-rules", "path": "docs/product-contract.md", "classification": "confirmed" },
+    { "id": "privacy", "path": "docs/privacy.md", "classification": "confirmed" },
+    { "id": "future-saas", "path": "docs/saas-architecture.md", "classification": "planned" },
+    { "id": "source-baseline", "path": "docs/source-coverage.md", "classification": "confirmed" },
+    { "id": "scanner", "path": "src/scanner.js", "classification": "confirmed" },
+    { "id": "model", "path": "src/model.js", "classification": "confirmed" },
+    { "id": "cli", "path": "src/cli.js", "classification": "confirmed" },
+    { "id": "server", "path": "src/server.js", "classification": "confirmed" },
+    { "id": "dashboard", "path": "static/", "classification": "confirmed" },
+    { "id": "tests", "path": "test/", "classification": "confirmed" },
+    { "id": "runtime-observations", "path": "docs/product-recon/EVIDENCE_INDEX.md", "classification": "confirmed" }
+  ]
+}
