@@ -30,7 +30,7 @@
   "scripts": {
     "check": "npm run lint && npm test && npm run scan:strict",
     "lint": "node scripts/check-js.js",
-    "test": "node --test --test-concurrency=1 test/*.test.js",
+    "test": "node scripts/run-tests.js",
     "test:portable": "npm run lint && npm test",
     "scan": "node bin/capability-intelligence.js scan",
     "scan:json": "node bin/capability-intelligence.js scan --json",
