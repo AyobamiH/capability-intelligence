@@ -36,6 +36,9 @@ It consumes metadata from those systems and explains what a specific environment
 18. Cached connector enabled and accessible flags remain metadata hints and never prove lifecycle enablement or runnability.
 19. Observed receipts are accepted only from an explicit bounded file, must match the current artifact fingerprint, and never invoke or mutate a capability.
 20. A v1 receipt import is an operator trust boundary, not cryptographic issuer authentication.
+21. Capability recommendation requires a concrete outcome and at least one meaningful matched term.
+22. Recommendation prefers task-level and lower-authority candidates, exposes lifecycle gaps, and never turns relevance into execution authority.
+23. Write and destructive candidates are deferred from automatic selection; no recommendation installs, enables, authenticates, or invokes a capability.
 
 ## Artifact Types
 

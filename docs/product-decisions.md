@@ -12,6 +12,8 @@ The CLI is the complete operator surface. The loopback dashboard remains one com
 
 CLI, API, and dashboard outcome matching use the same deterministic implementation. Type and risk remain explicit filters. Empty outcome search produces no matches, while an unfiltered inventory page lists artifacts. Inventory responses default to 50 records and reject limits above 200.
 
+The agent-facing `recommend` command is a decision aid over that search surface, not a broker. It rejects generic requests, ranks task-level skills and routes ahead of incidental metadata, labels authority, and shows readiness blockers. Read-only candidates are preferred; write and destructive candidates are deferred. A recommendation never grants permission or performs setup or execution.
+
 ## Evidence And Risk
 
 `verified: yes` requires an explicitly imported, validated `capability-observation.v1` receipt that matches the current artifact fingerprint. Structural or declared metadata cannot become verified execution evidence. V1 uses an operator trust boundary and does not authenticate issuers cryptographically. Risk remains a metadata-derived heuristic; every displayed level must retain its reasons and source context.

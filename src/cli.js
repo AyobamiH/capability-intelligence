@@ -4,7 +4,8 @@ import { parseCliArgs, validateCliOptions } from "./cli-options.js";
 import { applyObservedReceipts, loadReceiptBundle, renderReceiptReport } from "./receipts.js";
 import { scanEnvironment, redactedInventory } from "./scanner.js";
 import { hostDiff, inspectArtifact, searchArtifacts, unlabelledPluginReport } from "./query.js";
-import { renderInventory, renderSearch, renderSummary, renderUnlabelledPlugins } from "./render.js";
+import { recommendCapability } from "./recommend.js";
+import { renderInventory, renderRecommendation, renderSearch, renderSummary, renderUnlabelledPlugins } from "./render.js";
 import { startServer } from "./server.js";
 
 const HELP = `Capability Intelligence
@@ -13,6 +14,7 @@ Usage:
   capability-intelligence scan [--json] [--summary] [--strict] [--receipts PATH] [--home PATH]
   capability-intelligence coverage [--json] [--home PATH]
   capability-intelligence ask <outcome> [--json] [--home PATH]
+  capability-intelligence recommend <outcome> [--json] [--home PATH]
   capability-intelligence inspect <artifact-id> [--json] [--home PATH]
   capability-intelligence doctor [--json] [--home PATH]
   capability-intelligence risks [--level critical|high|medium|low|unknown] [--json] [--home PATH]
@@ -71,6 +73,13 @@ export async function runCli(argv, io = defaultIo()) {
       const results = searchArtifacts(inventory, query);
       emit(io, options.json ? results : renderSearch(results, query), options.json);
       return results.length ? 0 : 2;
+    }
+    case "recommend": {
+      const outcome = positional.join(" ").trim();
+      if (!outcome) return fail(io, "recommend requires a concrete outcome.");
+      const report = recommendCapability(inventory, outcome);
+      emit(io, options.json ? report : renderRecommendation(report), options.json);
+      return report.status === "candidate_found" ? 0 : 2;
     }
     case "inspect": {
       if (!positional[0]) return fail(io, "inspect requires an artifact ID.");

@@ -45,6 +45,18 @@ test("CLI scan, query, diff, and redacted export are functional", async (t) => {
   assert.equal(await runCli(["ask", "qxvplm", "--home", home], noMatchIo), 2);
   assert.match(noMatchIo.stdout.join("\n"), /No capability matches found/);
 
+  const recommendationIo = captureIo();
+  assert.equal(await runCli(["recommend", "create a product video", "--json", "--home", home], recommendationIo), 0);
+  const recommendation = JSON.parse(recommendationIo.stdout.join("\n"));
+  assert.equal(recommendation.status, "candidate_found");
+  assert.equal(recommendation.automaticAction, false);
+  assert.equal(recommendation.recommendation.artifact.type, "skill");
+  assert.match(recommendation.recommendation.artifact.description, /product videos/i);
+
+  const broadIo = captureIo();
+  assert.equal(await runCli(["recommend", "agents need tools", "--home", home], broadIo), 2);
+  assert.match(broadIo.stdout.join("\n"), /OUTCOME TOO BROAD/);
+
   const diffIo = captureIo();
   assert.equal(await runCli(["diff", "--host", "codex", "--host", "claude", "--home", home], diffIo), 0);
   assert.match(diffIo.stdout.join("\n"), /Codex only/);

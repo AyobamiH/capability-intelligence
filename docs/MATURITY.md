@@ -21,6 +21,7 @@ It complements the autonomous coding workflow library. The workflow chooses and 
 - local allowlisted inventory across Codex, shared skills, Claude skills, OpenClaw plugin manifests, cached app metadata, and workflow-library resources;
 - strict source accounting and privacy scanning;
 - deterministic outcome search, filters, host differences, duplicates, and artifact inspection;
+- bounded capability recommendation with authority labels, readiness blockers, and broad-outcome rejection;
 - bounded loopback dashboard and API inspection;
 - owner-only redacted export with explicit overwrite approval;
 - explicit import of a size-bounded `capability-observation.v1` receipt bundle;
@@ -30,6 +31,7 @@ It complements the autonomous coding workflow library. The workflow chooses and 
 
 - issuer authenticity is not cryptographically proven;
 - no component generates receipts or invokes capabilities;
+- recommendation is advisory only and does not install, authenticate, enable, or invoke its selected candidate;
 - enabled, authenticated, runnable, and verified states remain unknown unless evidence supports them;
 - cached plugin versions do not identify the active runtime version;
 - dashboard browser proof is Chromium-specific;
@@ -66,9 +68,9 @@ The core remains dependency-free Node.js with deterministic fixtures on supporte
 
 ## Near-Term Direction
 
-1. Use the v1 receipt contract with a second independent local producer before designing issuer authentication.
-2. Keep source coverage and lifecycle semantics under regression as local catalogues evolve.
-3. Extract a still-valid archived constraint only when current implementation evidence confirms it.
+1. Exercise the recommendation contract on real bounded agent tasks and retain outcome evidence before expanding its policy.
+2. Use the v1 receipt contract with a second independent local producer before designing issuer authentication.
+3. Keep source coverage, recommendation safety, and lifecycle semantics under regression as local catalogues evolve.
 
 ## Longer-Term Direction
 

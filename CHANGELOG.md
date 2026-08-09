@@ -2,6 +2,17 @@
 
 All notable changes to this project are documented in this file.
 
+## Unreleased
+
+### Added
+
+- A read-only `recommend <outcome>` command that ranks task-level capability candidates, labels authority, exposes lifecycle blockers, and defers write or destructive matches.
+- Explicit rejection of broad requests that do not contain a concrete, meaningful outcome.
+
+### Boundaries
+
+- Recommendation does not install, enable, authenticate, invoke, or grant authority to use a capability.
+
 ## 0.1.0 - 2026-08-08
 
 Published to npm on 2026-08-10 as `capability-intelligence@0.1.0` from the exact reviewed public package artifact.

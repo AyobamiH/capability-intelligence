@@ -53,6 +53,8 @@ node bin/capability-intelligence.js scan --json
 node bin/capability-intelligence.js scan --strict --summary
 node bin/capability-intelligence.js coverage
 node bin/capability-intelligence.js ask "create a product video"
+node bin/capability-intelligence.js recommend "review a GitHub pull request"
+node bin/capability-intelligence.js recommend "review a GitHub pull request" --json
 node bin/capability-intelligence.js inspect plugin:hyperframes
 node bin/capability-intelligence.js doctor
 node bin/capability-intelligence.js risks --level high
@@ -68,6 +70,8 @@ node bin/capability-intelligence.js serve --port 4317
 ```
 
 Outcome search returns only artifacts with a positive lexical or concept match. Lifecycle readiness helps order those relevant results; empty or unrelated queries do not receive readiness-ranked fallback results.
+
+`recommend` turns a concrete outcome into one bounded agent-facing decision record. It prefers task-level, lower-authority candidates, reports confidence and unproven lifecycle gates, and defers write or destructive matches. Broad prompts are rejected instead of being dressed up as useful recommendations. The command never installs, enables, authenticates, or invokes a capability; use still requires a separate authority decision.
 
 CLI options are command-specific. Unknown options and repeated singleton options fail instead of being ignored. `risks --level` accepts only `critical`, `high`, `medium`, `low`, or `unknown`.
 

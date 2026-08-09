@@ -20,10 +20,11 @@ Status values follow the workflow corpus convention: `verified-complete`, `relev
 | `CI-012` | Expand browser support | Current browser audit is Chromium-specific and distribution is not approved | `intentionally-deferred` | P2 | Distribution decision and supported-browser policy | Add browser-specific fixtures only when a real supported platform requires them. |
 | `CI-013` | Hosted control plane | SaaS architecture is research only; tenant, retention, legal, and threat contracts are absent | `intentionally-deferred` | P3 | Separate hosted-product objective | No remote crawl or silent upload; explicit redacted import and tenant isolation are proven first. |
 | `CI-014` | Capability acquisition broker or automatic invocation | The product is an intelligence layer, not an executor; current workflow evidence does not prove a generic broker is needed | `intentionally-deferred` | P3 | Repeated cross-project capability blockers that existing adapters cannot resolve | A separate product decision and consequence-authority model are required. |
+| `CI-015` | Add a bounded agent-facing recommendation contract | Product self-use showed that raw outcome search mixed task routes, metadata, and mutation tools and that generic prompts produced lexical noise | `verified-complete` | P0 | None | Concrete outcomes produce deterministic recommendations with confidence, authority, readiness blockers, alternatives, and deferred mutation candidates; generic outcomes fail closed; no capability is invoked. |
 
 ## Current Queue
 
-No P0 item remains open. `CI-011` is complete after public remote, exact-commit CI, registry hash verification, and clean npm consumer smoke. `CI-008` remains the next listed investigation, but it should not be implemented until more than one real receipt producer exists; a different maturity objective requires new evidence rather than promotion by enthusiasm alone.
+No P0 item remains open. `CI-015` closes the first agent-facing selection gap without implementing the deferred acquisition broker. The next useful evidence is repeated use of `recommend` on bounded tasks. `CI-008` remains a listed investigation, but it should not be implemented until more than one real receipt producer exists.
 
 ## Usage Evidence
 

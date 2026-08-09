@@ -9,6 +9,7 @@ const COMMAND_OPTIONS = Object.freeze({
   scan: optionSpec(["json", "summary", "strict"], ["home", "receipts"]),
   coverage: optionSpec(["json"], ["home"]),
   ask: optionSpec(["json"], ["home"]),
+  recommend: optionSpec(["json"], ["home"]),
   inspect: optionSpec(["json"], ["home"]),
   doctor: optionSpec(["json"], ["home"]),
   risks: optionSpec(["json"], ["home", "level"]),

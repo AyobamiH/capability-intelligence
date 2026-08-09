@@ -40,6 +40,40 @@ export function renderSearch(results, query) {
   return lines.join("\n");
 }
 
+export function renderRecommendation(report) {
+  if (!report.recommendation) {
+    return [
+      `Recommendation: ${report.status.replaceAll("_", " ").toUpperCase()}`,
+      `Outcome: ${report.outcome || "not provided"}`,
+      `Next safe step: ${report.nextSafeStep}`,
+      ...report.boundary.map((item) => `Boundary: ${item}`),
+    ].join("\n");
+  }
+  const candidate = report.recommendation;
+  const lines = [
+    `Recommendation for: ${report.outcome}`,
+    `${candidate.artifact.name} (${candidate.artifact.id})`,
+    `  Type: ${candidate.artifact.type}`,
+    `  Confidence: ${report.confidence}`,
+    `  Authority: ${candidate.authority}`,
+    `  Readiness: ${candidate.readiness}`,
+    `  Evidence match: ${candidate.matchedMeaningfulTerms.join(", ")}`,
+    `  Blockers: ${candidate.blockers.join("; ") || "none observed"}`,
+    `Next safe step: ${report.nextSafeStep}`,
+  ];
+  if (report.alternatives.length) {
+    lines.push("Alternatives");
+    for (const alternative of report.alternatives) {
+      lines.push(`  ${alternative.artifact.name} [${alternative.artifact.type}] authority=${alternative.authority}`);
+    }
+  }
+  if (report.deferred.length) {
+    lines.push(`Higher-authority candidates deferred: ${report.deferred.length}`);
+  }
+  report.boundary.forEach((item) => lines.push(`Boundary: ${item}`));
+  return lines.join("\n");
+}
+
 export function renderUnlabelledPlugins(report) {
   const lines = [
     `Unlabelled plugin manifests: ${report.count}`,
