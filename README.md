@@ -13,10 +13,9 @@ It is a standalone, local-first product. It does not execute autonomous coding w
 
 ## Distribution
 
-The source is released under the [MIT License](LICENSE) at `AyobamiH/capability-intelligence`. The npm package identity is `capability-intelligence`; verify registry availability before installing because source publication and npm publication are separate evidence.
+The source is released under the [MIT License](LICENSE) at `AyobamiH/capability-intelligence`. The public npm package is `capability-intelligence`, with `0.1.0` as the first published version.
 
 ```bash
-npm view capability-intelligence version
 npm install --global capability-intelligence
 capability-intelligence coverage
 ```

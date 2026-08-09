@@ -32,7 +32,7 @@ Seven product-recon handoff/model drafts are retained as a dated historical snap
 
 ## Distribution And Licence
 
-John selected the MIT License and the public repository identity `AyobamiH/capability-intelligence`. MIT permits use, modification, redistribution, sublicensing, and commercial use when the copyright and licence notice are retained, and supplies the software without warranty. The npm identity is `capability-intelligence@0.1.0`; source publication and registry publication must be verified independently. This decision does not approve a hosted launch or weaken runtime authority boundaries.
+John selected the MIT License and the public repository identity `AyobamiH/capability-intelligence`. MIT permits use, modification, redistribution, sublicensing, and commercial use when the copyright and licence notice are retained, and supplies the software without warranty. The independently verified npm release is `capability-intelligence@0.1.0`; its registry artifact hash matches the locally reviewed tarball. This decision does not approve a hosted launch or weaken runtime authority boundaries.
 
 ## Hosted Direction
 

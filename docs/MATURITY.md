@@ -2,7 +2,7 @@
 
 ## Current Level
 
-Capability Intelligence is an MIT-licensed, public-source, local-first alpha with a proven read-only inventory core, deterministic query surfaces, strict coverage accounting, bounded loopback inspection, and an explicit observed-receipt overlay. It is useful to one technical operator and has synthetic integration coverage. Public source availability does not make it a hosted service, capability executor, or cryptographic attestation system; npm publication remains a separately verified distribution event.
+Capability Intelligence is an MIT-licensed, public-source, public-npm, local-first alpha with a proven read-only inventory core, deterministic query surfaces, strict coverage accounting, bounded loopback inspection, and an explicit observed-receipt overlay. Version `0.1.0` is verified on npm. It is useful to one technical operator and has synthetic integration coverage. Distribution does not make it a hosted service, capability executor, or cryptographic attestation system.
 
 ## Intended Role
 

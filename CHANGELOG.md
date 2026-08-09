@@ -4,6 +4,8 @@ All notable changes to this project are documented in this file.
 
 ## 0.1.0 - 2026-08-08
 
+Published to npm on 2026-08-10 as `capability-intelligence@0.1.0` from the exact reviewed public package artifact.
+
 ### Added
 
 - Allowlisted, local-first inventory for agent skills, plugins, tools, connectors, hooks, and workflow resources.
