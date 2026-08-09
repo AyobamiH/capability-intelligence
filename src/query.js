@@ -15,15 +15,7 @@ export function queryArtifactPage(inventory, options = {}) {
   const risk = String(options.risk || "").trim();
   const offset = boundedInteger(options.offset, 0, Number.MAX_SAFE_INTEGER, 0);
   const limit = boundedInteger(options.limit, 1, MAX_PAGE_SIZE, DEFAULT_PAGE_SIZE);
-  let records = inventory.artifacts
-    .filter((artifact) => !type || artifact.type === type)
-    .filter((artifact) => !risk || artifact.risk.level === risk)
-    .map((artifact) => ({ artifact, ...(query ? matchOutcome(artifact, query) : { score: 0, matched: [] }) }));
-
-  if (query) records = records.filter((record) => record.score > 0);
-  records.sort((left, right) => query
-    ? right.score - left.score || compareArtifacts(left.artifact, right.artifact)
-    : compareArtifacts(left.artifact, right.artifact));
+  const records = rankedArtifactMatches(inventory, { query, type, risk });
 
   return {
     query,
@@ -36,6 +28,25 @@ export function queryArtifactPage(inventory, options = {}) {
     hasNext: offset + limit < records.length,
     items: records.slice(offset, offset + limit),
   };
+}
+
+// Recommendation policy needs the complete relevant set. Pagination remains a
+// presentation concern and must not hide a lower-scoring but better-fit tool.
+export function rankedArtifactMatches(inventory, options = {}) {
+  const query = String(options.query || "").trim();
+  const type = String(options.type || "").trim();
+  const risk = String(options.risk || "").trim();
+  let records = inventory.artifacts
+    .filter((artifact) => !type || artifact.type === type)
+    .filter((artifact) => !risk || artifact.risk.level === risk)
+    .map((artifact) => ({ artifact, ...(query ? matchOutcome(artifact, query) : { score: 0, matched: [] }) }));
+
+  if (query) records = records.filter((record) => record.score > 0);
+  records.sort((left, right) => query
+    ? right.score - left.score || compareArtifacts(left.artifact, right.artifact)
+    : compareArtifacts(left.artifact, right.artifact));
+
+  return records;
 }
 
 export function inspectArtifact(inventory, id) {

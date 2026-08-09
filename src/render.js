@@ -45,6 +45,7 @@ export function renderRecommendation(report) {
     return [
       `Recommendation: ${report.status.replaceAll("_", " ").toUpperCase()}`,
       `Outcome: ${report.outcome || "not provided"}`,
+      `Required authority: ${report.requiredAuthority.class}`,
       `Next safe step: ${report.nextSafeStep}`,
       ...report.boundary.map((item) => `Boundary: ${item}`),
     ].join("\n");
@@ -55,7 +56,9 @@ export function renderRecommendation(report) {
     `${candidate.artifact.name} (${candidate.artifact.id})`,
     `  Type: ${candidate.artifact.type}`,
     `  Confidence: ${report.confidence}`,
+    `  Required authority: ${report.requiredAuthority.class}`,
     `  Authority: ${candidate.authority}`,
+    `  Authority alignment: ${candidate.authorityAlignment}`,
     `  Readiness: ${candidate.readiness}`,
     `  Evidence match: ${candidate.matchedMeaningfulTerms.join(", ")}`,
     `  Blockers: ${candidate.blockers.join("; ") || "none observed"}`,

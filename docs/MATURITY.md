@@ -52,6 +52,8 @@ It complements the autonomous coding workflow library. The workflow chooses and 
 
 Normal maintainer acceptance requires `npm run check`: recursive syntax validation, deterministic fixture tests, and a strict real local scan. Public CI uses `npm run test:portable` because a clean runner does not contain the operator's allowlisted local capability sources. Direct UI changes additionally require the bounded browser audit. Receipt work requires passed, failed, stale, unmatched, malformed, unsafe, and repeated-observation fixtures.
 
+The recommendation contract has one sanitized nine-case operator evaluation covering repository review, documentation inventory, migration review, CI repair, video creation, read-only database inspection, npm publication planning, deployment planning, and protected secret delivery. All nine selected the expected task surface and performed no automatic action. This is useful local evidence, not a claim of universal ranking quality.
+
 Lifecycle truth is monotonic only within the evidence available to one report. A latest matching passed receipt yields `verified=yes`; a latest matching failed receipt yields `verified=no`; stale or unmatched receipts do not change lifecycle state. This means “verified in this report under this observation contract,” not “universally reliable.”
 
 ## Safety And Privacy
@@ -68,7 +70,7 @@ The core remains dependency-free Node.js with deterministic fixtures on supporte
 
 ## Near-Term Direction
 
-1. Exercise the recommendation contract on real bounded agent tasks and retain outcome evidence before expanding its policy.
+1. Repeat the recommendation evaluation only when a materially different environment or failed real task supplies new evidence.
 2. Use the v1 receipt contract with a second independent local producer before designing issuer authentication.
 3. Keep source coverage, recommendation safety, and lifecycle semantics under regression as local catalogues evolve.
 

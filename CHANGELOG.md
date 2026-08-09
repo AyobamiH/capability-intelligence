@@ -8,6 +8,7 @@ All notable changes to this project are documented in this file.
 
 - A read-only `recommend <outcome>` command that ranks task-level capability candidates, labels authority, exposes lifecycle blockers, and defers write or destructive matches.
 - Explicit rejection of broad requests that do not contain a concrete, meaningful outcome.
+- Separate requested-authority and candidate-authority alignment, with stop-clause handling and complete relevant-set ranking before pagination.
 
 ### Boundaries
 

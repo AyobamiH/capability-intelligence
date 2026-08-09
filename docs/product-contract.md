@@ -39,6 +39,8 @@ It consumes metadata from those systems and explains what a specific environment
 21. Capability recommendation requires a concrete outcome and at least one meaningful matched term.
 22. Recommendation prefers task-level and lower-authority candidates, exposes lifecycle gaps, and never turns relevance into execution authority.
 23. Write and destructive candidates are deferred from automatic selection; no recommendation installs, enables, authenticates, or invokes a capability.
+24. Recommendation reports the authority demanded by the outcome separately from authority proven for a candidate; unknown alignment remains visible.
+25. Display pagination cannot remove a relevant candidate before recommendation policy runs, and constraint clauses cannot inflate confidence or redirect capability selection.
 
 ## Artifact Types
 

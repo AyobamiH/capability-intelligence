@@ -71,7 +71,7 @@ node bin/capability-intelligence.js serve --port 4317
 
 Outcome search returns only artifacts with a positive lexical or concept match. Lifecycle readiness helps order those relevant results; empty or unrelated queries do not receive readiness-ranked fallback results.
 
-`recommend` turns a concrete outcome into one bounded agent-facing decision record. It prefers task-level, lower-authority candidates, reports confidence and unproven lifecycle gates, and defers write or destructive matches. Broad prompts are rejected instead of being dressed up as useful recommendations. The command never installs, enables, authenticates, or invokes a capability; use still requires a separate authority decision.
+`recommend` turns a concrete outcome into one bounded agent-facing decision record. It prefers task-level, lower-authority candidates, reports confidence, requested authority, candidate-authority alignment, and unproven lifecycle gates, and defers write or destructive matches. Constraint clauses such as `before editing` and `without writes` do not become tool-selection targets. Broad prompts are rejected instead of being dressed up as useful recommendations. The command evaluates the complete relevant set rather than only the first display page, but never installs, enables, authenticates, or invokes a capability; use still requires a separate authority decision.
 
 CLI options are command-specific. Unknown options and repeated singleton options fail instead of being ignored. `risks --level` accepts only `critical`, `high`, `medium`, `low`, or `unknown`.
 

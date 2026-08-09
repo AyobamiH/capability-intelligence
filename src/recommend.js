@@ -1,44 +1,21 @@
-import { outcomeTokens } from "./classify.js";
-import { searchArtifacts } from "./query.js";
+import { rankedArtifactMatches } from "./query.js";
+import { authorityAlignment, authorityClass, candidatePolicy, outcomeIntent } from "./recommend-policy.js";
 
-const GENERIC_TERMS = new Set([
-  "agent", "agents", "capability", "capabilities", "help", "need", "needs",
-  "tool", "tools", "use", "using", "workflow", "workflows",
-]);
-
-const TYPE_WEIGHT = Object.freeze({
-  "workflow-route": 5,
-  skill: 4,
-  "helper-script": 3,
-  command: 3,
-  "app-tool": 2,
-  plugin: 1,
-  connector: 1,
-  schema: -4,
-  template: -4,
-  "documentation-control": -5,
-});
-
-const AUTHORITY_WEIGHT = Object.freeze({
-  read_only: 3,
-  unknown: 0,
-  write: -5,
-  destructive: -12,
-});
+export { authorityClass } from "./recommend-policy.js";
 
 export function recommendCapability(inventory, outcome, options = {}) {
   const requestedOutcome = String(outcome || "").trim();
-  const terms = outcomeTokens(requestedOutcome);
-  const meaningfulTerms = terms.filter((term) => !GENERIC_TERMS.has(term));
+  const intent = outcomeIntent(requestedOutcome);
   const boundary = [
     "No capability was installed, enabled, authenticated, or invoked.",
     "Execution requires a separate authority decision outside this recommendation.",
   ];
 
-  if (!requestedOutcome || !meaningfulTerms.length) {
+  if (!requestedOutcome || !intent.rawTerms.length) {
     return {
       outcome: requestedOutcome,
       status: "outcome_too_broad",
+      requiredAuthority: intent.requiredAuthority,
       automaticAction: false,
       recommendation: null,
       alternatives: [],
@@ -48,9 +25,12 @@ export function recommendCapability(inventory, outcome, options = {}) {
     };
   }
 
-  const candidates = searchArtifacts(inventory, requestedOutcome, options.searchLimit || 100)
-    .map((record) => candidateRecord(record, meaningfulTerms))
-    .filter((record) => record.matchedMeaningfulTerms.length)
+  const recommendationQuery = [requestedOutcome, ...intent.rawTerms, ...intent.conceptTerms].join(" ");
+  const candidates = rankedArtifactMatches(inventory, { query: recommendationQuery })
+    .map((record) => candidateRecord(record, intent))
+    .filter((record) => record.matchEvidence.directTerms.length
+      || record.matchEvidence.conceptTerms.length
+      || record.matchEvidence.nameAlignedTerms.length)
     .sort(compareCandidates);
   const unique = uniqueCandidates(candidates);
   const selectable = unique.filter((candidate) => !["write", "destructive"].includes(candidate.authority));
@@ -60,6 +40,7 @@ export function recommendCapability(inventory, outcome, options = {}) {
     return {
       outcome: requestedOutcome,
       status: "no_candidate",
+      requiredAuthority: intent.requiredAuthority,
       automaticAction: false,
       recommendation: null,
       alternatives: [],
@@ -85,7 +66,8 @@ export function recommendCapability(inventory, outcome, options = {}) {
   return {
     outcome: requestedOutcome,
     status: "candidate_found",
-    confidence: confidence(recommendation, meaningfulTerms),
+    confidence: confidence(recommendation),
+    requiredAuthority: intent.requiredAuthority,
     automaticAction: false,
     recommendation,
     alternatives,
@@ -95,35 +77,28 @@ export function recommendCapability(inventory, outcome, options = {}) {
   };
 }
 
-export function authorityClass(artifact) {
-  const annotations = artifact.metadata?.annotations || {};
-  const reasons = artifact.risk?.reasons || [];
-  const permission = String(artifact.metadata?.permissionLevel || "").toLowerCase();
-
-  if (annotations.destructiveHint === true || reasons.includes("destructive tool")) return "destructive";
-  if (annotations.openWorldHint === true && annotations.readOnlyHint !== true) return "write";
-  if (reasons.includes("open-world write capability")) return "write";
-  if (annotations.readOnlyHint === true || reasons.includes("declared read-only")) return "read_only";
-  if (permission && /(^|[, ]+)([^, ]*-read|read-only)([, ]+|$)/.test(permission)
-    && !/(write|publish|deploy|mutation|admin|delete|merge)/.test(permission)) return "read_only";
-  if (/(write|publish|deploy|mutation|admin|delete|merge)/.test(permission)) return "write";
-  return "unknown";
-}
-
-function candidateRecord({ artifact, score, matched }, meaningfulTerms) {
-  const authority = authorityClass(artifact);
+function candidateRecord({ artifact, score, matched }, intent) {
+  const policy = candidatePolicy(artifact, matched, intent);
   const blockers = readinessBlockers(artifact.lifecycle);
-  const matchedMeaningfulTerms = meaningfulTerms.filter((term) => matched.includes(term));
   return {
     artifact: recommendationArtifact(artifact),
     queryScore: score,
     recommendationScore: score
-      + (TYPE_WEIGHT[artifact.type] || 0)
       + readinessWeight(artifact.lifecycle)
-      + AUTHORITY_WEIGHT[authority],
+      + policy.scoreAdjustment,
     matched,
-    matchedMeaningfulTerms,
-    authority,
+    matchedMeaningfulTerms: [...new Set([
+      ...policy.directTerms,
+      ...policy.conceptTerms,
+      ...policy.nameAlignedTerms,
+    ])],
+    matchEvidence: {
+      directTerms: policy.directTerms,
+      conceptTerms: policy.conceptTerms,
+      nameAlignedTerms: policy.nameAlignedTerms,
+    },
+    authority: policy.authority,
+    authorityAlignment: authorityAlignment(intent.requiredAuthority.class, policy.authority),
     readiness: readinessState(artifact.lifecycle),
     blockers,
   };
@@ -168,10 +143,12 @@ function readinessBlockers(lifecycle) {
   return blockers;
 }
 
-function confidence(candidate, meaningfulTerms) {
-  const coverage = candidate.matchedMeaningfulTerms.length / meaningfulTerms.length;
-  if (candidate.matchedMeaningfulTerms.length >= 2 && coverage >= 0.5) return "high";
-  if (candidate.matchedMeaningfulTerms.length >= 2 || coverage >= 0.5) return "medium";
+function confidence(candidate) {
+  const evidence = candidate.matchEvidence;
+  if (evidence.nameAlignedTerms.length >= 2 || evidence.directTerms.length >= 3) return "high";
+  if (evidence.nameAlignedTerms.length >= 1
+    || evidence.directTerms.length >= 2
+    || (evidence.directTerms.length && evidence.conceptTerms.length)) return "medium";
   return "low";
 }
 
