@@ -4,6 +4,12 @@ This is the canonical product backlog. It records product work separately from t
 
 Status values follow the workflow corpus convention: `verified-complete`, `relevant-ready`, `relevant-blocked`, `relevant-needs-investigation`, and `intentionally-deferred`.
 
+## Agent Planning Contract
+
+Agents select product work from this backlog after reading `docs/product-contract.md` and `docs/MATURITY.md`. A new implementation item needs repository or usage evidence, a status, a dependency or next condition, and a testable acceptance statement. Available implementation capacity is not evidence that an item belongs on the roadmap.
+
+When work changes capability behavior, reconcile this queue with `docs/MATURITY.md`, the public interface in `README.md`, and `CHANGELOG.md`. Boundary changes also require `docs/product-contract.md` and a durable entry in `docs/product-decisions.md`. Do not turn deferred execution, brokering, hosted-service, or multi-agent ideas into active work silently.
+
 | ID | Item | Origin and repository evidence | Status | Priority | Dependency / next condition | Acceptance and verification |
 | --- | --- | --- | --- | --- | --- | --- |
 | `CI-001` | Complete allowlisted local capability inventory | Hard-cutover commit `c6194d6`; scanner, source adapters, strict coverage, and synthetic fixtures | `verified-complete` | P0 | None | `npm run check` reconciles every source without unsafe output. |
@@ -20,12 +26,12 @@ Status values follow the workflow corpus convention: `verified-complete`, `relev
 | `CI-012` | Expand browser support | Current browser audit is Chromium-specific and distribution is not approved | `intentionally-deferred` | P2 | Distribution decision and supported-browser policy | Add browser-specific fixtures only when a real supported platform requires them. |
 | `CI-013` | Hosted control plane | SaaS architecture is research only; tenant, retention, legal, and threat contracts are absent | `intentionally-deferred` | P3 | Separate hosted-product objective | No remote crawl or silent upload; explicit redacted import and tenant isolation are proven first. |
 | `CI-014` | Capability acquisition broker or automatic invocation | The product is an intelligence layer, not an executor; current workflow evidence does not prove a generic broker is needed | `intentionally-deferred` | P3 | Repeated cross-project capability blockers that existing adapters cannot resolve | A separate product decision and consequence-authority model are required. |
-| `CI-015` | Add a bounded agent-facing recommendation contract | Product self-use showed that raw outcome search mixed task routes, metadata, and mutation tools, generic prompts produced lexical noise, and display truncation could hide a better task surface | `verified-complete` | P0 | None | Deterministic tests and a sanitized nine-case local evaluation prove requested-authority reporting, stop-clause handling, full relevant-set ranking, expected task selection, and zero automatic actions. |
+| `CI-015` | Add a bounded agent-facing recommendation contract | Product self-use showed that raw outcome search mixed task routes, metadata, and mutation tools, generic prompts produced lexical noise, and display truncation could hide a better task surface | `verified-complete` | P0 | None | Deterministic tests plus sanitized 9-case and 12-case local evaluations prove requested-authority reporting, negative-clause handling, useful before-context, name-coverage ranking, full relevant-set evaluation, accepted task selection, and zero automatic actions. |
 
 ## Current Queue
 
-No P0 item remains open. `CI-015` closes the first agent-facing selection gap without implementing the deferred acquisition broker. Additional ranking work now requires a failed real task or a materially different environment, not more synthetic ambition. `CI-008` remains a listed investigation, but it should not be implemented until more than one real receipt producer exists.
+No P0 item remains open. `CI-015` closes the first agent-facing selection gap without implementing the deferred acquisition broker. The second independent task set initially exposed six genuine ranking or intent-authority defects and passed 12/12 after bounded correction. Additional ranking work now requires a failed real task or a materially different environment or task family, not more synthetic ambition. `CI-008` remains a listed investigation, but it should not be implemented until more than one real receipt producer exists.
 
 ## Usage Evidence
 
-The autonomous coding workflow library exposed `CI-002`, `CI-003`, `CI-006`, and the need for this canonical backlog while using Capability Intelligence as a real target project. That consuming project may verify this product, but product requirements and maturity decisions remain canonical here.
+Independent repository use exposed `CI-002`, `CI-003`, `CI-006`, and the need for this canonical backlog while treating Capability Intelligence as a real target project. Such use is product evidence only: it creates no runtime dependency, shared roadmap, or authority relationship. Product requirements and maturity decisions remain canonical in this repository.

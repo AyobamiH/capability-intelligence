@@ -77,6 +77,30 @@ test("recommendation ignores stopwords and favors name-aligned documentation too
   assert.equal(report.recommendation.matchedMeaningfulTerms.includes("before"), false);
 });
 
+test("recommendation preserves useful before-context and normalizes agent-work intent", () => {
+  const inventory = fixtureInventory([
+    artifact("windows-scan", "windows scan local files", "helper-script"),
+    artifact("precommit", "pre commit check", "helper-script"),
+    artifact("release", "release preflight local route", "workflow-route"),
+    artifact("outcomes", "autonomy outcomes", "helper-script"),
+    artifact("probe", "read only probes", "helper-script"),
+    artifact("multi", "multi project proof", "helper-script"),
+    artifact("packaging", "skills library packaging skill", "skill"),
+    artifact("gap", "add skill gap", "helper-script"),
+    artifact("env", "env audit skill", "skill"),
+    artifact("cleaner", "skill cleaner", "helper-script"),
+    artifact("package-run", "package candidate dry run", "workflow-route"),
+    artifact("run-next", "run next", "helper-script"),
+  ]);
+
+  assert.equal(recommendCapability(inventory, "validate exact staged files and secrets before a local commit").recommendation.artifact.id, "precommit");
+  assert.equal(recommendCapability(inventory, "summarize autonomous route completions blockers and resumptions from local evidence").recommendation.artifact.id, "outcomes");
+  assert.equal(recommendCapability(inventory, "prove the same read-only workflow contracts across multiple repositories").recommendation.artifact.id, "multi");
+  assert.equal(recommendCapability(inventory, "record one missing reusable skill contract without duplicating the backlog").recommendation.artifact.id, "gap");
+  assert.equal(recommendCapability(inventory, "audit workflow skill documents for routing hygiene and stale metadata").recommendation.artifact.id, "cleaner");
+  assert.equal(recommendCapability(inventory, "recover an interrupted autonomous workflow run without changing files").recommendation.artifact.id, "run-next");
+});
+
 test("recommendation evaluates relevant candidates beyond the display search page", () => {
   const distractors = Array.from({ length: 120 }, (_, index) => artifact(
     `distractor-${index}`,
@@ -98,7 +122,12 @@ test("recommendation evaluates relevant candidates beyond the display search pag
 
 test("outcome intent states authority demanded by the task", () => {
   assert.equal(outcomeIntent("review a pull request without writes").requiredAuthority.class, "read_only");
+  assert.equal(outcomeIntent("validate release readiness without publishing").requiredAuthority.class, "read_only");
+  assert.equal(outcomeIntent("summarize autonomous route outcomes").requiredAuthority.class, "read_only");
+  assert.equal(outcomeIntent("prove workflow contracts across repositories").requiredAuthority.class, "read_only");
   assert.equal(outcomeIntent("fix failing CI").requiredAuthority.class, "local_write");
+  assert.equal(outcomeIntent("record a missing skill contract").requiredAuthority.class, "local_write");
+  assert.equal(outcomeIntent("extract sessions into a private corpus").requiredAuthority.class, "local_write");
   assert.equal(outcomeIntent("publish an npm package").requiredAuthority.class, "external_write");
   assert.equal(outcomeIntent("deliver a secret to a command").requiredAuthority.class, "sensitive_access");
   assert.equal(outcomeIntent("delete production rows").requiredAuthority.class, "destructive");

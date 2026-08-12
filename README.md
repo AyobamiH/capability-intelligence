@@ -11,6 +11,21 @@ Capability Intelligence answers three questions:
 
 It is a standalone, local-first product. It does not execute autonomous coding workflows and does not verify engineering claims like OpsTruth.
 
+## Agent Orientation
+
+Capability Intelligence is heading toward better **agent decision support**: truthful capability discovery, lifecycle readiness, bounded recommendation, authority visibility, and explicit evidence gaps. It is not heading toward workflow execution, automatic installation, a generic capability broker, or a multi-agent control plane without new evidence and a separate product decision.
+
+Available now:
+
+- allowlisted local inventory across skills, plugins, app tools, connectors, commands, routes, schemas, templates, and documentation controls;
+- strict source coverage and privacy validation;
+- deterministic search, inspection, diagnostics, host comparison, and redacted export;
+- advisory `recommend` decisions with confidence, authority, name coverage, and lifecycle blockers;
+- explicit observed-receipt overlays tied to current artifact fingerprints;
+- a bounded loopback dashboard and read-only local API.
+
+Agents should read `AGENTS.md`, `docs/product-contract.md`, `docs/MATURITY.md`, and `docs/BACKLOG.md` before changing product direction. `docs/MATURITY.md` states current proof and limitations; `docs/BACKLOG.md` owns priority and acceptance. Material behavior changes must update those authorities and `CHANGELOG.md` before handoff.
+
 ## Distribution
 
 The source is released under the [MIT License](LICENSE) at `AyobamiH/capability-intelligence`. The public npm package is `capability-intelligence`, with `0.1.0` as the first published version.
@@ -71,7 +86,7 @@ node bin/capability-intelligence.js serve --port 4317
 
 Outcome search returns only artifacts with a positive lexical or concept match. Lifecycle readiness helps order those relevant results; empty or unrelated queries do not receive readiness-ranked fallback results.
 
-`recommend` turns a concrete outcome into one bounded agent-facing decision record. It prefers task-level, lower-authority candidates, reports confidence, requested authority, candidate-authority alignment, and unproven lifecycle gates, and defers write or destructive matches. Constraint clauses such as `before editing` and `without writes` do not become tool-selection targets. Broad prompts are rejected instead of being dressed up as useful recommendations. The command evaluates the complete relevant set rather than only the first display page, but never installs, enables, authenticates, or invokes a capability; use still requires a separate authority decision.
+`recommend` turns a concrete outcome into one bounded agent-facing decision record. It prefers task-level, lower-authority candidates, reports confidence, requested authority, candidate-authority alignment, name coverage, and unproven lifecycle gates, and defers write or destructive matches. Negative clauses such as `without writes` do not become tool-selection targets, while useful context such as `before a local commit` remains available to distinguish a pre-commit check from an unrelated scanner. Broad prompts are rejected instead of being dressed up as useful recommendations. The command evaluates the complete relevant set rather than only the first display page, but never installs, enables, authenticates, or invokes a capability; use still requires a separate authority decision.
 
 CLI options are command-specific. Unknown options and repeated singleton options fail instead of being ignored. `risks --level` accepts only `critical`, `high`, `medium`, `low`, or `unknown`.
 

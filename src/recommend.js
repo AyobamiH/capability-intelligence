@@ -96,6 +96,7 @@ function candidateRecord({ artifact, score, matched }, intent) {
       directTerms: policy.directTerms,
       conceptTerms: policy.conceptTerms,
       nameAlignedTerms: policy.nameAlignedTerms,
+      nameCoverage: policy.nameCoverage,
     },
     authority: policy.authority,
     authorityAlignment: authorityAlignment(intent.requiredAuthority.class, policy.authority),

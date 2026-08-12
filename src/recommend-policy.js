@@ -34,13 +34,16 @@ const AUTHORITY_WEIGHT = Object.freeze({
 
 export function outcomeIntent(outcome) {
   const value = String(outcome || "").trim();
-  // Clauses after "before" and "without" constrain the requested action;
-  // treating them as capability targets made editing tools rank for inspection.
-  const primaryClause = value.split(/\b(?:before|without)\b/i, 1)[0];
-  const rawTerms = unique(slugify(primaryClause).split("-")
+  // A negative "without" clause is a boundary, not a tool-selection target.
+  // "Before" can carry useful nouns (for example, "before a local commit"),
+  // so only its mutating verbs are removed below.
+  const primaryClause = value.split(/\bwithout\b/i, 1)[0];
+  const baseTerms = unique(slugify(primaryClause).split("-")
     .filter((term) => term.length > 1)
     .map(canonicalTerm)
+    .filter((term) => !beforeConstraintActions(value).has(term))
     .filter((term) => !GENERIC_TERMS.has(term) && !STOP_TERMS.has(term)));
+  const rawTerms = unique([...baseTerms, ...derivedIntentTerms(baseTerms)]);
   const expandedTerms = unique(outcomeTokens(value)
     .map(canonicalTerm)
     .filter((term) => !GENERIC_TERMS.has(term) && !STOP_TERMS.has(term)));
@@ -58,17 +61,23 @@ export function candidatePolicy(artifact, matched, intent) {
   const directTerms = intent.rawTerms.filter((term) => canonicalMatched.includes(term));
   const conceptTerms = intent.conceptTerms.filter((term) => canonicalMatched.includes(term));
   const nameAlignedTerms = intent.rawTerms.filter((term) => nameTerms.includes(term));
+  const meaningfulNameTerms = nameTerms.filter((term) => !GENERIC_TERMS.has(term) && !STOP_TERMS.has(term));
+  const nameCoverage = meaningfulNameTerms.length
+    ? nameAlignedTerms.length / meaningfulNameTerms.length
+    : 0;
   const authority = authorityClass(artifact);
   const taskSurface = ["workflow-route", "skill", "helper-script", "command"].includes(artifact.type);
   return {
     directTerms,
     conceptTerms,
     nameAlignedTerms,
+    nameCoverage,
     authority,
     scoreAdjustment: (TYPE_WEIGHT[artifact.type] || 0)
       + (AUTHORITY_WEIGHT[authority] || 0)
       + directTerms.length * (taskSurface ? 3 : 1)
-      + nameAlignedTerms.length * (taskSurface ? 6 : 1),
+      + nameAlignedTerms.length * (taskSurface ? 6 : 1)
+      + Math.round(nameCoverage * (taskSurface ? 20 : 2)),
   };
 }
 
@@ -99,7 +108,7 @@ export function authorityAlignment(required, actual) {
 
 function requiredAuthority(value) {
   const normalised = slugify(value).replaceAll("-", " ");
-  if (/(read only|without (write|writes|writing|change|changes|mutation)|before (edit|editing|write|writing))/.test(normalised)) {
+  if (/(read only|without (write|writes|writing|change|changes|mutation|publish|publishing|publication|deploy|deploying|push|pushing|merge|merging|tag|tagging|release|releasing)|before (edit|editing|write|writing))/.test(normalised)) {
     return authority("read_only", "the outcome explicitly limits work to inspection");
   }
   if (/\b(delete|destroy|drop|purge|revoke|wipe)\b/.test(normalised)) {
@@ -111,10 +120,10 @@ function requiredAuthority(value) {
   if (/\b(publish|deploy|push|merge|release|tag)\b/.test(normalised)) {
     return authority("external_write", "the outcome requests an external mutation");
   }
-  if (/\b(create|edit|fix|insert|install|migrate|modify|update|write)\b/.test(normalised)) {
+  if (/\b(append|compile|create|edit|extract|fix|generate|insert|install|migrate|modify|record|update|write)\b/.test(normalised)) {
     return authority("local_write", "the outcome requests a local change");
   }
-  if (/\b(review|inspect|inventory|list|query|audit|check)\b/.test(normalised)) {
+  if (/\b(audit|check|compare|inspect|inventory|list|map|prove|query|recover|review|summarize|validate|verify)\b/.test(normalised)) {
     return authority("read_only", "the outcome requests inspection");
   }
   return authority("unspecified", "the outcome does not establish an authority class");
@@ -130,5 +139,34 @@ function canonicalTerm(term) {
   if (["deliver", "delivered", "delivering"].includes(term)) return "delivery";
   if (["edit", "edited", "editing"].includes(term)) return "editing";
   if (["inventory", "list", "listing"].includes(term)) return "inventory";
+  if (["autonomous", "autonomy"].includes(term)) return "autonomy";
+  if (["completion", "completions", "completed"].includes(term)) return "completion";
+  if (["blocker", "blockers", "blocked"].includes(term)) return "blocker";
+  if (["resume", "resumed", "resumption", "resumptions"].includes(term)) return "resume";
+  if (["repository", "repositories", "repo", "repos"].includes(term)) return "project";
+  if (["multiple", "multi"].includes(term)) return "multi";
+  if (["session", "sessions"].includes(term)) return "session";
+  if (["extract", "extracted", "extracting", "extraction"].includes(term)) return "extract";
+  if (["outcome", "outcomes"].includes(term)) return "outcome";
+  if (["file", "files"].includes(term)) return "file";
   return term;
+}
+
+function beforeConstraintActions(value) {
+  const tail = String(value || "").split(/\bbefore\b/i).slice(1).join(" ");
+  if (!tail) return new Set();
+  const actions = new Set(["editing", "write", "writing", "change", "changes", "changing", "modify", "modifying"]);
+  return new Set(slugify(tail).split("-").map(canonicalTerm).filter((term) => actions.has(term)));
+}
+
+function derivedIntentTerms(terms) {
+  const set = new Set(terms);
+  const derived = [];
+  if (set.has("recover") || set.has("recovery") || set.has("interrupted")) derived.push("resume", "next");
+  if (set.has("autonomy") && ["completion", "blocker", "resume"].some((term) => set.has(term))) derived.push("outcome");
+  if (set.has("multi") && set.has("project")) derived.push("proof");
+  if (set.has("skill") && set.has("missing")) derived.push("gap");
+  if (set.has("skill") && ["hygiene", "stale", "cleanup"].some((term) => set.has(term))) derived.push("cleaner");
+  if (set.has("staged") && set.has("commit")) derived.push("pre", "check");
+  return derived;
 }

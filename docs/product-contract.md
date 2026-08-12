@@ -41,6 +41,8 @@ It consumes metadata from those systems and explains what a specific environment
 23. Write and destructive candidates are deferred from automatic selection; no recommendation installs, enables, authenticates, or invokes a capability.
 24. Recommendation reports the authority demanded by the outcome separately from authority proven for a candidate; unknown alignment remains visible.
 25. Display pagination cannot remove a relevant candidate before recommendation policy runs, and constraint clauses cannot inflate confidence or redirect capability selection.
+26. Recommendation may normalize common agent-work inflections and derive bounded context terms, but exact task-name coverage must outrank incidental matches to generic route or local-work words.
+27. Intent authority must classify common inspection verbs separately from local artifact-producing verbs; candidate authority remains independently unknown until source evidence proves it.
 
 ## Artifact Types
 

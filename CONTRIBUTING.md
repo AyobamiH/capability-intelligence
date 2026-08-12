@@ -22,6 +22,18 @@ npm run check
 - Prefer exact-file commits and keep generated inventory, screenshots, caches, and local evidence out of Git.
 - External mutations such as installation, authentication, publication, or service calls require separate explicit authority.
 
+## Documentation Handoff
+
+Before implementation, read `AGENTS.md`, `docs/product-contract.md`, `docs/MATURITY.md`, and `docs/BACKLOG.md`. Before handoff:
+
+- update `README.md`, `docs/MATURITY.md`, and `CHANGELOG.md` for material behavior or interface changes;
+- update `docs/BACKLOG.md` when priority, status, dependency, or acceptance changes;
+- update `docs/product-contract.md` and `docs/product-decisions.md` when a product boundary or durable decision changes;
+- leave historical reconnaissance historical;
+- state explicitly when no documentation update is required because behavior and direction are unchanged.
+
+`npm test` enforces the presence and cross-reference shape of this continuity contract. It cannot prove prose is truthful, so review the resulting claims against current tests and evidence.
+
 Run the browser audit for dashboard changes:
 
 ```bash

@@ -14,7 +14,19 @@ The product answers:
 4. what risks and authority boundaries apply;
 5. whether an explicitly supplied observation matches the current artifact.
 
-It complements the autonomous coding workflow library. The workflow chooses and governs work; Capability Intelligence inventories and explains capability evidence.
+It operates independently from workflow executors and engineering evidence systems. Another repository may appear as an allowlisted metadata source, but Capability Intelligence does not require that repository, govern its work, or inherit its roadmap.
+
+## Current Product Direction
+
+The current direction is to make capability evidence useful at the moment an agent chooses how to approach a concrete task. That means improving recommendation quality, explanation, confidence calibration, lifecycle blockers, source coverage, and receipt-backed observations while keeping every recommendation advisory.
+
+Current development must preserve three boundaries:
+
+1. inventory and recommendation do not become installation or execution;
+2. structural metadata does not become runtime proof;
+3. evidence from one environment does not become a universal capability claim.
+
+No generic broker, autonomous invocation layer, workflow-engine integration, or multi-agent role system is active work.
 
 ## Supported Use Cases
 
@@ -52,7 +64,7 @@ It complements the autonomous coding workflow library. The workflow chooses and 
 
 Normal maintainer acceptance requires `npm run check`: recursive syntax validation, deterministic fixture tests, and a strict real local scan. Public CI uses `npm run test:portable` because a clean runner does not contain the operator's allowlisted local capability sources. Direct UI changes additionally require the bounded browser audit. Receipt work requires passed, failed, stale, unmatched, malformed, unsafe, and repeated-observation fixtures.
 
-The recommendation contract has one sanitized nine-case operator evaluation covering repository review, documentation inventory, migration review, CI repair, video creation, read-only database inspection, npm publication planning, deployment planning, and protected secret delivery. All nine selected the expected task surface and performed no automatic action. This is useful local evidence, not a claim of universal ranking quality.
+The recommendation contract has two sanitized operator evaluations. The first covered nine broad engineering tasks. A second, independent 12-case task set exercised interrupted-run recovery, source-size checks, autonomy outcomes, multi-project proof, public-path checks, pre-commit validation, skill-gap recording, skill hygiene, session extraction, browser verification, npm readiness, and protected secret delivery. Semantic review found six correct initial selections and six ranking defects; after bounded name-coverage, intent-normalization, and authority fixes, all 12 selected an accepted task surface with high confidence and no automatic action. The combined 21 cases are useful local evidence, not a claim of universal ranking quality.
 
 Lifecycle truth is monotonic only within the evidence available to one report. A latest matching passed receipt yields `verified=yes`; a latest matching failed receipt yields `verified=no`; stale or unmatched receipts do not change lifecycle state. This means “verified in this report under this observation contract,” not “universally reliable.”
 
@@ -70,9 +82,9 @@ The core remains dependency-free Node.js with deterministic fixtures on supporte
 
 ## Near-Term Direction
 
-1. Repeat the recommendation evaluation only when a materially different environment or failed real task supplies new evidence.
+1. Exercise recommendation behavior against materially different environments, task families, or failed real tasks, then improve explanation and confidence only where evidence exposes a defect.
 2. Use the v1 receipt contract with a second independent local producer before designing issuer authentication.
-3. Keep source coverage, recommendation safety, and lifecycle semantics under regression as local catalogues evolve.
+3. Keep source coverage, recommendation safety, lifecycle semantics, and the agent-facing documentation contract under regression as local catalogues evolve.
 
 ## Longer-Term Direction
 
