@@ -10,7 +10,10 @@ All notable changes to this project are documented in this file.
 - Explicit rejection of broad requests that do not contain a concrete, meaningful outcome.
 - Separate requested-authority and candidate-authority alignment, with stop-clause handling and complete relevant-set ranking before pagination.
 - Name-coverage ranking and context-aware intent normalization derived from a second independent 12-case agent-task evaluation.
+- Target-term and intent-coverage ranking derived from a materially different 12-case service/media/app evaluation, including correct caption and Codex skill-creation selection.
 - Read-only versus local-write intent classification for common agent verbs including summarize, prove, record, and extract.
+- Local-write classification for add, animate, capture, and turn tasks, plus external-write classification for explicit plugin/app/connector permission-setting changes and named Google app mutations.
+- Marketplace-index placeholders for catalogue entries whose plugin manifests are not locally materialized, preserving strict accounting with `present=no` rather than a false parse failure.
 - An agent-facing documentation continuity contract that identifies product authorities, current direction, update triggers, and handoff requirements without coupling this product to a workflow executor.
 
 ### Boundaries

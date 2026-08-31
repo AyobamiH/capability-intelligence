@@ -20,7 +20,7 @@ Available now:
 - allowlisted local inventory across skills, plugins, app tools, connectors, commands, routes, schemas, templates, and documentation controls;
 - strict source coverage and privacy validation;
 - deterministic search, inspection, diagnostics, host comparison, and redacted export;
-- advisory `recommend` decisions with confidence, authority, name coverage, and lifecycle blockers;
+- advisory `recommend` decisions with confidence, authority, name and intent coverage, and lifecycle blockers;
 - explicit observed-receipt overlays tied to current artifact fingerprints;
 - a bounded loopback dashboard and read-only local API.
 
@@ -51,7 +51,7 @@ The default scanner uses an allowlist rooted at the current user's home director
 - Codex system and user skills
 - shared `.agents/skills`
 - Claude skills
-- the local Codex plugin catalogue and marketplace policy
+- the local Codex plugin catalogue and marketplace policy, including visible `present=no` placeholders for indexed entries whose manifests are not materialized
 - installed Codex plugin metadata
 - cached app-tool schemas and safety annotations
 - cached app-directory connector metadata
@@ -86,7 +86,7 @@ node bin/capability-intelligence.js serve --port 4317
 
 Outcome search returns only artifacts with a positive lexical or concept match. Lifecycle readiness helps order those relevant results; empty or unrelated queries do not receive readiness-ranked fallback results.
 
-`recommend` turns a concrete outcome into one bounded agent-facing decision record. It prefers task-level, lower-authority candidates, reports confidence, requested authority, candidate-authority alignment, name coverage, and unproven lifecycle gates, and defers write or destructive matches. Negative clauses such as `without writes` do not become tool-selection targets, while useful context such as `before a local commit` remains available to distinguish a pre-commit check from an unrelated scanner. Broad prompts are rejected instead of being dressed up as useful recommendations. The command evaluates the complete relevant set rather than only the first display page, but never installs, enables, authenticates, or invokes a capability; use still requires a separate authority decision.
+`recommend` turns a concrete outcome into one bounded agent-facing decision record. It prefers task-level, lower-authority candidates, reports confidence, requested authority, candidate-authority alignment, name coverage, intent coverage, and unproven lifecycle gates, and defers write or destructive matches. Generic name words such as `create`, `new`, and `add` cannot outrank the requested object merely because they appear in a capability name. Negative clauses such as `without writes` do not become tool-selection targets, while useful context such as `before a local commit` remains available to distinguish a pre-commit check from an unrelated scanner. Broad prompts are rejected instead of being dressed up as useful recommendations. The command evaluates the complete relevant set rather than only the first display page, but never installs, enables, authenticates, or invokes a capability; use still requires a separate authority decision.
 
 CLI options are command-specific. Unknown options and repeated singleton options fail instead of being ignored. `risks --level` accepts only `critical`, `high`, `medium`, `low`, or `unknown`.
 
@@ -122,6 +122,6 @@ npm run check
 
 `test:portable` is the deterministic public CI gate. `check` additionally validates a strict scan of the current operator's allowlisted local capability sources; CI cannot manufacture that private local source surface.
 
-See [docs/product-contract.md](docs/product-contract.md), [docs/source-coverage.md](docs/source-coverage.md), [docs/privacy.md](docs/privacy.md), [docs/product-decisions.md](docs/product-decisions.md), [docs/observed-receipts.md](docs/observed-receipts.md), [docs/BACKLOG.md](docs/BACKLOG.md), [docs/MATURITY.md](docs/MATURITY.md), and [docs/saas-architecture.md](docs/saas-architecture.md).
+See [docs/product-contract.md](docs/product-contract.md), [docs/source-coverage.md](docs/source-coverage.md), [docs/privacy.md](docs/privacy.md), [docs/product-decisions.md](docs/product-decisions.md), [docs/observed-receipts.md](docs/observed-receipts.md), [docs/BACKLOG.md](docs/BACKLOG.md), [docs/MATURITY.md](docs/MATURITY.md), the [service/media recommendation evaluation](docs/evaluations/2026-08-31-service-media-recommendation.md), and [docs/saas-architecture.md](docs/saas-architecture.md).
 
 Bounded product reconnaissance is indexed in [docs/product-recon/README.md](docs/product-recon/README.md), including the [unlabelled plugin manifest audit](docs/product-recon/UNLABELLED_PLUGIN_MANIFEST_AUDIT.md). The seven pre-contract handoff/model drafts are retained in a dated, package-excluded historical archive with a per-file disposition; they are not current product authority.

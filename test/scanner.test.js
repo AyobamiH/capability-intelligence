@@ -29,6 +29,24 @@ test("a complete synthetic environment is represented without silent loss", (t) 
   assert.deepEqual(validateInventoryShape(inventory), []);
 });
 
+test("marketplace entries without materialized manifests remain visible without failing coverage", (t) => {
+  const home = fixtureHome(t);
+  const marketplaceFile = path.join(home, ".codex/.tmp/plugins/.agents/plugins/marketplace.json");
+  const marketplace = JSON.parse(fs.readFileSync(marketplaceFile, "utf8"));
+  marketplace.plugins.push({ name: "remote-only", category: "Research" });
+  fs.writeFileSync(marketplaceFile, `${JSON.stringify(marketplace, null, 2)}\n`);
+
+  const inventory = scanEnvironment({ home, clock: CLOCK });
+  const placeholder = inventory.artifacts.find((artifact) => artifact.id === "plugin:remote-only");
+  assert.equal(inventory.coverage.status, "passed");
+  assert.equal(placeholder.lifecycle.discovered, "yes");
+  assert.equal(placeholder.lifecycle.present, "no");
+  assert.equal(placeholder.metadata.manifestCapabilityStatus, "manifest_missing");
+  assert.ok(placeholder.risk.reasons.includes("plugin manifest is not locally materialized"));
+  const marketplaceSource = inventory.sources.find((source) => source.id === "codex-plugin-marketplace-index");
+  assert.deepEqual({ records: marketplaceSource.records, represented: marketplaceSource.represented }, { records: 4, represented: 4 });
+});
+
 test("OpenClaw plugin manifests are represented without configuration or runtime overclaiming", (t) => {
   const inventory = scanEnvironment({ home: fixtureHome(t), clock: CLOCK });
   const records = inventory.artifacts.filter((artifact) => artifact.source === "openclaw-native-plugins");

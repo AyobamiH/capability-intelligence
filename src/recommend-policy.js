@@ -11,6 +11,8 @@ const STOP_TERMS = new Set([
   "the", "this", "to", "with", "without", "your",
 ]);
 
+const GENERIC_NAME_ACTION_TERMS = new Set(["add", "create", "new"]);
+
 const TYPE_WEIGHT = Object.freeze({
   "workflow-route": 8,
   skill: 5,
@@ -60,11 +62,14 @@ export function candidatePolicy(artifact, matched, intent) {
   const nameTerms = unique(slugify(artifact.name).split("-").filter(Boolean).map(canonicalTerm));
   const directTerms = intent.rawTerms.filter((term) => canonicalMatched.includes(term));
   const conceptTerms = intent.conceptTerms.filter((term) => canonicalMatched.includes(term));
-  const nameAlignedTerms = intent.rawTerms.filter((term) => nameTerms.includes(term));
-  const meaningfulNameTerms = nameTerms.filter((term) => !GENERIC_TERMS.has(term) && !STOP_TERMS.has(term));
+  const nameAlignedTerms = intent.rawTerms.filter((term) => nameTerms.includes(term) && !GENERIC_NAME_ACTION_TERMS.has(term));
+  const meaningfulNameTerms = nameTerms.filter((term) => !GENERIC_TERMS.has(term)
+    && !STOP_TERMS.has(term)
+    && !GENERIC_NAME_ACTION_TERMS.has(term));
   const nameCoverage = meaningfulNameTerms.length
     ? nameAlignedTerms.length / meaningfulNameTerms.length
     : 0;
+  const intentCoverage = intent.rawTerms.length ? directTerms.length / intent.rawTerms.length : 0;
   const authority = authorityClass(artifact);
   const taskSurface = ["workflow-route", "skill", "helper-script", "command"].includes(artifact.type);
   return {
@@ -72,12 +77,14 @@ export function candidatePolicy(artifact, matched, intent) {
     conceptTerms,
     nameAlignedTerms,
     nameCoverage,
+    intentCoverage,
     authority,
     scoreAdjustment: (TYPE_WEIGHT[artifact.type] || 0)
       + (AUTHORITY_WEIGHT[authority] || 0)
       + directTerms.length * (taskSurface ? 3 : 1)
       + nameAlignedTerms.length * (taskSurface ? 6 : 1)
-      + Math.round(nameCoverage * (taskSurface ? 20 : 2)),
+      + Math.round(nameCoverage * (taskSurface ? 20 : 2))
+      + Math.round(intentCoverage * (taskSurface ? 16 : 2)),
   };
 }
 
@@ -117,13 +124,19 @@ function requiredAuthority(value) {
   if (/\b(secret|credential|password|token|authenticate|authentication)\b/.test(normalised)) {
     return authority("sensitive_access", "the outcome requires protected authentication or secret material");
   }
+  if (/\b(change|create|edit|modify|set|update|write)\b.*\bgoogle\s+(?:doc|document|drive|sheet|sheets|slide|slides|spreadsheet|spreadsheets)\b/.test(normalised)) {
+    return authority("external_write", "the outcome requests a mutation in an external application");
+  }
+  if (/\b(change|modify|set|update)\b.*\b(plugin|app|connector)\b.*\b(permission|permissions|setting|settings)\b/.test(normalised)) {
+    return authority("external_write", "the outcome requests an external capability-setting mutation");
+  }
   if (/\b(publish|deploy|push|merge|release|tag)\b/.test(normalised)) {
     return authority("external_write", "the outcome requests an external mutation");
   }
-  if (/\b(append|compile|create|edit|extract|fix|generate|insert|install|migrate|modify|record|update|write)\b/.test(normalised)) {
+  if (/\b(add|animate|append|capture|compile|create|edit|extract|fix|generate|insert|install|migrate|modify|record|turn|update|write)\b/.test(normalised)) {
     return authority("local_write", "the outcome requests a local change");
   }
-  if (/\b(audit|check|compare|inspect|inventory|list|map|prove|query|recover|review|summarize|validate|verify)\b/.test(normalised)) {
+  if (/\b(audit|check|compare|find|inspect|inventory|list|map|prove|query|recover|research|review|search|summarize|validate|verify)\b/.test(normalised)) {
     return authority("read_only", "the outcome requests inspection");
   }
   return authority("unspecified", "the outcome does not establish an authority class");

@@ -4,7 +4,7 @@
 
 | Source | Records | Authority |
 |---|---|---|
-| Codex plugin catalogue | Plugin manifests, marketplace policy, bundled skills and components | Read-only |
+| Codex plugin catalogue | Marketplace index, materialized plugin manifests, visible missing-manifest placeholders, bundled skills and components | Read-only |
 | Installed plugin cache | Installed versions, bundled skills, declared integrations, agents, commands, hooks, scripts, and UI components | Read-only |
 | Codex/Agents/Claude skill roots | Skill metadata and structural resources | Read-only |
 | App tool cache | Tool names, descriptions, schemas counts, and safety annotations | Read-only |
@@ -41,6 +41,8 @@ lifecycle.verified: unknown
 ```
 
 The exact count is environment-dependent and is recalculated on every scan.
+
+A marketplace index record without a local plugin manifest remains represented as a structural plugin placeholder with `present=no`. Its absence is visible and does not become a parse failure, an invented integration surface, or a runtime-readiness claim.
 
 Use `capability-intelligence unlabelled` or `capability-intelligence unlabelled --json` to inspect the retained set. The report uses already-normalised safe metadata and does not inspect credentials, private configuration, or capability runtime state. A description or inferred broad label explains likely purpose only; it does not prove installation, authentication, runnability, or verification.
 
@@ -97,6 +99,7 @@ Strict mode fails when:
 - a discovered manifest or skill cannot be represented;
 - a JSON source cannot be parsed;
 - source enumeration and artifact counts disagree;
+- a marketplace index record is neither backed by a manifest nor represented as an explicit missing-manifest placeholder;
 - unsafe fields or absolute home paths reach a redacted export;
 - duplicate artifact identifiers would overwrite records;
 - an adapter reports an internal error.

@@ -39,6 +39,8 @@ export function scanPluginCatalog(config) {
     .map((entry) => path.join(pluginsRoot, entry.name, ".codex-plugin", "plugin.json"))
     .filter((file) => fs.existsSync(file))
     .sort();
+  const marketplaceRecords = marketplacePlugins(root, findings);
+  const manifestNames = new Set(manifests.map((file) => path.basename(path.dirname(path.dirname(file)))));
   let parseFailures = 0;
   let skillRecords = 0;
   let skillRepresented = 0;
@@ -198,14 +200,37 @@ export function scanPluginCatalog(config) {
     }
   }
 
-  const marketplaceCount = marketplacePluginCount(root, findings);
-  if (marketplaceCount !== null && marketplaceCount !== manifests.length) {
-    findings.push({
-      level: "error",
-      code: "marketplace_manifest_count_mismatch",
-      source: "codex-plugin-catalog",
-      message: `Marketplace lists ${marketplaceCount} plugins but ${manifests.length} manifests were discovered.`,
-    });
+  // The marketplace may advertise entries whose manifests are not materialized
+  // in the local catalogue. Keep those records visible without pretending that
+  // their implementation metadata is present.
+  for (const record of marketplaceRecords || []) {
+    if (manifestNames.has(record.name)) continue;
+    const slug = slugify(record.name);
+    artifacts.push(createArtifact({
+      id: `plugin:${slug}`,
+      type: "plugin",
+      name: record.name,
+      description: "Marketplace entry without a locally materialized plugin manifest.",
+      source: "codex-plugin-marketplace-index",
+      hosts: ["codex"],
+      capabilities: inferCapabilities(record.name, record.category),
+      classificationEvidence: "structural",
+      lifecycle: {
+        discovered: "yes",
+        present: "no",
+        installed: installedNames.has(record.name) ? "yes" : "no",
+        enabled: "unknown",
+        authenticated: "unknown",
+        runnable: "unknown",
+        verified: "unknown",
+      },
+      risk: { level: "unknown", reasons: ["plugin manifest is not locally materialized"] },
+      metadata: {
+        category: record.category,
+        manifestCapabilityStatus: "manifest_missing",
+        surfaces: {},
+      },
+    }));
   }
 
   return {
@@ -220,7 +245,15 @@ export function scanPluginCatalog(config) {
         represented: manifests.length - parseFailures,
         deduplicated: 0,
         parseFailures,
-        metadata: { unlabelledManifests: unlabelled, marketplaceRecords: marketplaceCount },
+        metadata: { unlabelledManifests: unlabelled, marketplaceRecords: marketplaceRecords?.length ?? null },
+      },
+      {
+        id: "codex-plugin-marketplace-index",
+        status: marketplaceRecords === null ? "absent" : "available",
+        records: marketplaceRecords?.length || 0,
+        represented: marketplaceRecords?.length || 0,
+        deduplicated: 0,
+        parseFailures: 0,
       },
       {
         id: "codex-plugin-bundled-skills",
@@ -290,12 +323,16 @@ function installedPluginNames(codexRoot) {
   return result;
 }
 
-function marketplacePluginCount(root, findings) {
+function marketplacePlugins(root, findings) {
   const file = path.join(root, ".agents", "plugins", "marketplace.json");
   if (!fs.existsSync(file)) return null;
   try {
     const data = readJson(file);
-    return Array.isArray(data.plugins) ? data.plugins.length : null;
+    if (!Array.isArray(data.plugins)) return null;
+    return data.plugins.map((record, index) => ({
+      name: safeText(typeof record === "string" ? record : record?.name, 120) || `unlabelled-marketplace-entry-${index + 1}`,
+      category: safeText(typeof record === "object" ? record?.category : null, 80) || null,
+    }));
   } catch {
     findings.push({
       level: "error",

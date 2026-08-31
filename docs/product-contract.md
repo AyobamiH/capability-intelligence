@@ -43,6 +43,9 @@ It consumes metadata from those systems and explains what a specific environment
 25. Display pagination cannot remove a relevant candidate before recommendation policy runs, and constraint clauses cannot inflate confidence or redirect capability selection.
 26. Recommendation may normalize common agent-work inflections and derive bounded context terms, but exact task-name coverage must outrank incidental matches to generic route or local-work words.
 27. Intent authority must classify common inspection verbs separately from local artifact-producing verbs; candidate authority remains independently unknown until source evidence proves it.
+28. Every marketplace index record remains represented even when its plugin manifest is not materialized; such a placeholder is discovered but `present=no` and exposes no invented surfaces or lifecycle readiness.
+29. Generic action words in capability names cannot outweigh the requested task object; recommendation reports intent coverage so broader context matches remain inspectable.
+30. Explicit local artifact actions such as add, animate, capture, and turn require local-write authority, while plugin/app/connector permission-setting changes and mutations to named external-app content require external-write authority.
 
 ## Artifact Types
 
@@ -89,6 +92,6 @@ For `capability-observation.v1`, observed evidence means the latest explicit rec
 - Cached connector records are de-duplicated and represented without install URLs or IDs.
 - Coding workflow library resources are represented without copying their implementation.
 - Coverage can distinguish absent source roots from adapter failures.
-- Strict mode fails on silent loss, parse failures, unsafe output, or source count mismatch.
+- Strict mode fails on silent loss, parse failures, unsafe output, or source count mismatch; known marketplace entries with absent manifests are represented explicitly instead of being silently dropped or treated as malformed.
 - Nested lifecycle, evidence, risk, source-accounting, graph, finding, and coverage shapes are schema constrained and runtime validated.
 - The dashboard exposes bounded inventory, evidence detail, diagnostics, and host differences without adding mutation routes.

@@ -135,6 +135,7 @@ test("dashboard CSS reflows without globally hiding overflow", () => {
 test("package documentation allowlist excludes local reconnaissance drafts", () => {
   const packageJson = JSON.parse(fs.readFileSync(new URL("../package.json", import.meta.url), "utf8"));
   assert.equal(packageJson.files.includes("docs/"), false);
+  assert.ok(packageJson.files.includes("docs/evaluations/2026-08-31-service-media-recommendation.md"));
   assert.ok(packageJson.files.includes("docs/product-recon/README.md"));
   assert.ok(packageJson.files.includes("docs/product-recon/UNLABELLED_PLUGIN_MANIFEST_AUDIT.md"));
   assert.equal(packageJson.files.some((entry) => /HANDOFF|DOSSIER|OPEN_QUESTIONS|product-model/.test(entry)), false);

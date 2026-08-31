@@ -12,7 +12,9 @@ The CLI is the complete operator surface. The loopback dashboard remains one com
 
 CLI, API, and dashboard outcome matching use the same deterministic implementation. Type and risk remain explicit filters. Empty outcome search produces no matches, while an unfiltered inventory page lists artifacts. Inventory responses default to 50 records and reject limits above 200.
 
-The agent-facing `recommend` command is a decision aid over that search surface, not a broker. It rejects generic requests, ranks the complete relevant set, favors task-name coverage and domain alignment over incidental generic matches, labels requested and candidate authority separately, and shows readiness blockers. Negative constraint clauses are not treated as requested capabilities, while useful lifecycle context such as a pending commit remains meaningful. Read-only candidates are preferred; write and destructive candidates are deferred. A recommendation never grants permission or performs setup or execution.
+The agent-facing `recommend` command is a decision aid over that search surface, not a broker. It rejects generic requests, ranks the complete relevant set, favors task-object, task-name, intent-coverage, and domain alignment over incidental generic matches, labels requested and candidate authority separately, and shows readiness blockers. Generic action words such as `create`, `new`, and `add` do not count as discriminating name alignment. Negative constraint clauses are not treated as requested capabilities, while useful lifecycle context such as a pending commit remains meaningful. Read-only candidates are preferred; write and destructive candidates are deferred. A recommendation never grants permission or performs setup or execution.
+
+The marketplace index and materialized catalogue are separate structural evidence surfaces. An indexed plugin without a local manifest remains visible as `discovered=yes`, `present=no`, with unknown runtime state and no invented integration surfaces. This preserves strict accounting without treating catalogue materialization drift as a working capability or a malformed manifest.
 
 ## Evidence And Risk
 

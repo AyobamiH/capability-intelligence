@@ -101,6 +101,37 @@ test("recommendation preserves useful before-context and normalizes agent-work i
   assert.equal(recommendCapability(inventory, "recover an interrupted autonomous workflow run without changing files").recommendation.artifact.id, "run-next");
 });
 
+test("recommendation favors the requested object over generic create and context terms", () => {
+  const inventory = fixtureInventory([
+    artifact("recut", "talking-head-recut", "skill", {
+      description: "Package a talking-head video with graphic overlays.",
+      lifecycle: { installed: "yes" },
+    }),
+    artifact("captions", "embedded-captions", "skill", {
+      description: "Add captions to a talking-head video.",
+      lifecycle: { installed: "yes" },
+    }),
+    artifact("figma", "figma-create-new-file", "skill", {
+      description: "Create a new Figma file with a skill.",
+      lifecycle: { installed: "yes" },
+    }),
+    artifact("skill-creator", "skill-creator", "skill", {
+      description: "Create a new Codex skill.",
+      lifecycle: { installed: "yes" },
+    }),
+  ]);
+
+  const captions = recommendCapability(inventory, "add captions to a talking-head video");
+  assert.equal(captions.recommendation.artifact.id, "captions");
+  assert.equal(captions.requiredAuthority.class, "local_write");
+  assert.equal(captions.recommendation.matchEvidence.intentCoverage, 1);
+
+  const skill = recommendCapability(inventory, "create a new Codex skill");
+  assert.equal(skill.recommendation.artifact.id, "skill-creator");
+  assert.equal(skill.recommendation.matchEvidence.nameAlignedTerms.includes("create"), false);
+  assert.equal(skill.recommendation.matchEvidence.nameAlignedTerms.includes("new"), false);
+});
+
 test("recommendation evaluates relevant candidates beyond the display search page", () => {
   const distractors = Array.from({ length: 120 }, (_, index) => artifact(
     `distractor-${index}`,
@@ -126,6 +157,14 @@ test("outcome intent states authority demanded by the task", () => {
   assert.equal(outcomeIntent("summarize autonomous route outcomes").requiredAuthority.class, "read_only");
   assert.equal(outcomeIntent("prove workflow contracts across repositories").requiredAuthority.class, "read_only");
   assert.equal(outcomeIntent("fix failing CI").requiredAuthority.class, "local_write");
+  assert.equal(outcomeIntent("add captions to a talking-head video").requiredAuthority.class, "local_write");
+  assert.equal(outcomeIntent("animate a Three.js scene").requiredAuthority.class, "local_write");
+  assert.equal(outcomeIntent("capture a website into a social video").requiredAuthority.class, "local_write");
+  assert.equal(outcomeIntent("turn a pull request into a video").requiredAuthority.class, "local_write");
+  assert.equal(outcomeIntent("research a topic with citations").requiredAuthority.class, "read_only");
+  assert.equal(outcomeIntent("inspect and change plugin permission settings").requiredAuthority.class, "external_write");
+  assert.equal(outcomeIntent("analyze and update a Google spreadsheet").requiredAuthority.class, "external_write");
+  assert.equal(outcomeIntent("edit a Google Slides deck").requiredAuthority.class, "external_write");
   assert.equal(outcomeIntent("record a missing skill contract").requiredAuthority.class, "local_write");
   assert.equal(outcomeIntent("extract sessions into a private corpus").requiredAuthority.class, "local_write");
   assert.equal(outcomeIntent("publish an npm package").requiredAuthority.class, "external_write");

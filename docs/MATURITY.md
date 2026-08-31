@@ -64,7 +64,9 @@ No generic broker, autonomous invocation layer, workflow-engine integration, or 
 
 Normal maintainer acceptance requires `npm run check`: recursive syntax validation, deterministic fixture tests, and a strict real local scan. Public CI uses `npm run test:portable` because a clean runner does not contain the operator's allowlisted local capability sources. Direct UI changes additionally require the bounded browser audit. Receipt work requires passed, failed, stale, unmatched, malformed, unsafe, and repeated-observation fixtures.
 
-The recommendation contract has two sanitized operator evaluations. The first covered nine broad engineering tasks. A second, independent 12-case task set exercised interrupted-run recovery, source-size checks, autonomy outcomes, multi-project proof, public-path checks, pre-commit validation, skill-gap recording, skill hygiene, session extraction, browser verification, npm readiness, and protected secret delivery. Semantic review found six correct initial selections and six ranking defects; after bounded name-coverage, intent-normalization, and authority fixes, all 12 selected an accepted task surface with high confidence and no automatic action. The combined 21 cases are useful local evidence, not a claim of universal ranking quality.
+The recommendation contract has three sanitized operator evaluations. The first covered nine broad engineering tasks. A second, independent 12-case task set exercised interrupted-run recovery, source-size checks, autonomy outcomes, multi-project proof, public-path checks, pre-commit validation, skill-gap recording, skill hygiene, session extraction, browser verification, npm readiness, and protected secret delivery. A third 12-case live service/media/app task set exercised Google Drive, Sheets, Slides, plugin settings, deep research, skill creation and installation, captions, Three.js, website video, product launch video, and PR video. It initially selected 10/12 accepted task surfaces and exposed missing authority verbs plus two ranking defects; after bounded target-term and intent-coverage correction it selected 12/12 with high confidence and no automatic action. The combined 33 cases are useful local evidence, not a claim of universal ranking quality.
+
+The same live evaluation found 64 marketplace index records but only 62 materialized plugin manifests. Strict coverage now represents both missing manifests as structural placeholders with `present=no`, yielding complete accounting without claiming those plugins are installed or runnable. See `docs/evaluations/2026-08-31-service-media-recommendation.md`.
 
 Lifecycle truth is monotonic only within the evidence available to one report. A latest matching passed receipt yields `verified=yes`; a latest matching failed receipt yields `verified=no`; stale or unmatched receipts do not change lifecycle state. This means “verified in this report under this observation contract,” not “universally reliable.”
 
@@ -82,7 +84,7 @@ The core remains dependency-free Node.js with deterministic fixtures on supporte
 
 ## Near-Term Direction
 
-1. Exercise recommendation behavior against materially different environments, task families, or failed real tasks, then improve explanation and confidence only where evidence exposes a defect.
+1. Exercise recommendation behavior in real task handoffs and additional environments, then improve explanation and confidence only where a failed selection or misleading authority classification is observed.
 2. Use the v1 receipt contract with a second independent local producer before designing issuer authentication.
 3. Keep source coverage, recommendation safety, lifecycle semantics, and the agent-facing documentation contract under regression as local catalogues evolve.
 
