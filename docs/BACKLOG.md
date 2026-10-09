@@ -43,3 +43,8 @@ Independent repository use exposed `CI-002`, `CI-003`, `CI-006`, and the need fo
 Candidate `0.2.0` reconciles npm with the current GitHub implementation under the owner-authorised package update objective. Local validation, tarball inspection, clean installation, and authenticated publication are required. Registry publication is pending; existing product authority and execution boundaries remain unchanged.
 
 Validation evidence: Passed npm run check (43 tests and strict live source coverage), coverage, outcome search and all four receipt tests. A fresh-cache tarball install and CLI help passed; package-path and credential-pattern checks found no issues. Registry publication and post-publication installation remain pending.
+
+
+## Registry acceptance — 2026-10-10
+
+`capability-intelligence@0.2.0` is independently confirmed on npm under `latest`. The registry tarball matches the reviewed GitHub asset and staged package; exact-version installation with a new cache, every CLI bin and registry-signature verification passed. See [release evidence](releases/npm-v0.2.0-evidence.json). Maintainer 2FA was preserved and the temporary publishing login was logged out and removed. Publication adds no production execution authority.

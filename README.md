@@ -1,6 +1,6 @@
 # Capability Intelligence
 
-Release candidate `0.2.0` packages the current GitHub implementation. Publication and clean registry installation must be verified separately.
+Version `0.2.0` is published on npm under `latest`. Registry digest, fresh-cache installation and CLI acceptance are recorded in [release evidence](docs/releases/npm-v0.2.0-evidence.json).
 
 
 [![Validate](https://github.com/AyobamiH/capability-intelligence/actions/workflows/validate.yml/badge.svg)](https://github.com/AyobamiH/capability-intelligence/actions/workflows/validate.yml)

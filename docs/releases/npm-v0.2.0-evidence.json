@@ -1,0 +1,44 @@
+{
+  "name": "capability-intelligence",
+  "version": "0.2.0",
+  "source": "3bad73601ed15f27239b1f73c23dcadc3f1e3daa",
+  "sourceFileComparison": "all packaged files match merged source",
+  "sha256": "e78e2917d9c190a771be0870ee5c71cb0f36b1a272a9b13470b08ddb39e7a0f2",
+  "integrity": "sha512-PkmO2hZDnCy49800elshG6kV/9ddJ1bmZBBE6szAq7Pg+qtbjJMaMqoXY8zQHd69ytfyqCW9OCcnenjX7IZhNw==",
+  "files": 48,
+  "freshCacheInstall": "passed",
+  "cliHelp": "passed",
+  "npmPublication": "confirmed",
+  "stageId": "a453345c-6205-4885-ac20-ffea0bce5ecf",
+  "stagedTarballComparison": "SHA-256 matches local tarball and GitHub-recorded asset digest",
+  "publishedAt": "2026-10-09T23:26:00.524Z",
+  "registryTarball": "https://registry.npmjs.org/capability-intelligence/-/capability-intelligence-0.2.0.tgz",
+  "registryIntegrity": "sha512-PkmO2hZDnCy49800elshG6kV/9ddJ1bmZBBE6szAq7Pg+qtbjJMaMqoXY8zQHd69ytfyqCW9OCcnenjX7IZhNw==",
+  "registrySha256": "e78e2917d9c190a771be0870ee5c71cb0f36b1a272a9b13470b08ddb39e7a0f2",
+  "distTags": {
+    "latest": "0.2.0"
+  },
+  "publisher": "oneclicksystems",
+  "postPublicationFreshCacheInstall": "passed",
+  "installedVersion": "0.2.0",
+  "cliBins": {
+    "capability-intelligence": {
+      "exit": 0,
+      "outputPresent": true
+    },
+    "capability": {
+      "exit": 0,
+      "outputPresent": true
+    }
+  },
+  "exports": null,
+  "main": null,
+  "signatureAudit": {
+    "exit": 0,
+    "summary": "audited 1 package in 1s\n\n1 package has a verified registry signature"
+  },
+  "registrySignatureKeyIds": [
+    "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+  ],
+  "authenticationBoundary": "Maintainer approved via npm website with required 2FA. Temporary CLI login logged out and removed; no persistent npm write credential introduced. Trusted-publisher inspection required a separate 2FA challenge and was not completed for these packages."
+}
