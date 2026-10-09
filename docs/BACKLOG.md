@@ -36,3 +36,10 @@ No P0 item remains open. `CI-015` closes the first agent-facing selection gap wi
 ## Usage Evidence
 
 Independent repository use exposed `CI-002`, `CI-003`, `CI-006`, and the need for this canonical backlog while treating Capability Intelligence as a real target project. Such use is product evidence only: it creates no runtime dependency, shared roadmap, or authority relationship. Product requirements and maturity decisions remain canonical in this repository.
+
+
+## Distribution reconciliation — 2026-10-09
+
+Candidate `0.2.0` reconciles npm with the current GitHub implementation under the owner-authorised package update objective. Local validation, tarball inspection, clean installation, and authenticated publication are required. Registry publication is pending; existing product authority and execution boundaries remain unchanged.
+
+Validation evidence: Passed npm run check (43 tests and strict live source coverage), coverage, outcome search and all four receipt tests. A fresh-cache tarball install and CLI help passed; package-path and credential-pattern checks found no issues. Registry publication and post-publication installation remain pending.

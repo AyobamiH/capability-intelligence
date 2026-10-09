@@ -4,6 +4,8 @@ All notable changes to this project are documented in this file.
 
 ## Unreleased
 
+## 0.2.0 - 2026-10-09
+
 ### Added
 
 - A read-only `recommend <outcome>` command that ranks task-level capability candidates, labels authority, exposes lifecycle blockers, and defers write or destructive matches.
