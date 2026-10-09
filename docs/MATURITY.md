@@ -91,3 +91,10 @@ The core remains dependency-free Node.js with deterministic fixtures on supporte
 ## Longer-Term Direction
 
 Only evidence may promote signed receipts, additional browsers, stronger distribution support, or a hosted import service. Capability acquisition, automatic installation, and autonomous invocation remain separate product concerns and should not be folded into this inventory layer merely to make it appear more autonomous.
+
+
+## Distribution reconciliation — 2026-10-09
+
+Candidate `0.2.0` reconciles npm with the current GitHub implementation under the owner-authorised package update objective. Local validation, tarball inspection, clean installation, and authenticated publication are required. Registry publication is pending; existing product authority and execution boundaries remain unchanged.
+
+Validation evidence: Passed npm run check (43 tests and strict live source coverage), coverage, outcome search and all four receipt tests. A fresh-cache tarball install and CLI help passed; package-path and credential-pattern checks found no issues. Registry publication and post-publication installation remain pending.

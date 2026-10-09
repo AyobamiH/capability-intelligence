@@ -1,6 +1,6 @@
 {
   "name": "capability-intelligence",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": false,
   "description": "Local-first capability intelligence for AI agent skills, plugins, tools, connectors, hooks, and workflow resources.",
   "license": "MIT",

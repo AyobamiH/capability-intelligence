@@ -1,5 +1,8 @@
 # Capability Intelligence
 
+Release candidate `0.2.0` packages the current GitHub implementation. Publication and clean registry installation must be verified separately.
+
+
 [![Validate](https://github.com/AyobamiH/capability-intelligence/actions/workflows/validate.yml/badge.svg)](https://github.com/AyobamiH/capability-intelligence/actions/workflows/validate.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
