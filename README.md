@@ -128,3 +128,9 @@ npm run check
 See [docs/product-contract.md](docs/product-contract.md), [docs/source-coverage.md](docs/source-coverage.md), [docs/privacy.md](docs/privacy.md), [docs/product-decisions.md](docs/product-decisions.md), [docs/observed-receipts.md](docs/observed-receipts.md), [docs/BACKLOG.md](docs/BACKLOG.md), [docs/MATURITY.md](docs/MATURITY.md), the [service/media recommendation evaluation](docs/evaluations/2026-08-31-service-media-recommendation.md), and [docs/saas-architecture.md](docs/saas-architecture.md).
 
 Bounded product reconnaissance is indexed in [docs/product-recon/README.md](docs/product-recon/README.md), including the [unlabelled plugin manifest audit](docs/product-recon/UNLABELLED_PLUGIN_MANIFEST_AUDIT.md). The seven pre-contract handoff/model drafts are retained in a dated, package-excluded historical archive with a per-file disposition; they are not current product authority.
+
+## Agent development entry point
+
+Start with [AGENTS.md](AGENTS.md), the [project knowledge map](.agents/knowledge/README.md),
+and the repository-owned [Secure API Delivery skill](.agents/skills/secure-api-delivery/SKILL.md).
+These files travel with a source checkout; no personal skill installation is required.
